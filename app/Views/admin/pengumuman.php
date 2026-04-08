@@ -35,6 +35,10 @@
         .mobile-menu-toggle:hover { background: rgba(255, 255, 255, 0.25); }
         
         .user-section { display: flex; align-items: center; gap: 15px; }
+        .notification-bell { position: relative; background: rgba(255, 255, 255, 0.15); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: var(--transition); }
+        .notification-bell:hover { background: rgba(255, 255, 255, 0.25); }
+        .notification-badge { position: absolute; top: -2px; right: -2px; background: var(--accent); color: white; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
         .user-info { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); transition: var(--transition); cursor: pointer; }
         .user-info:hover { background: rgba(255, 255, 255, 0.2); }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, var(--purple) 0%, var(--info) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
@@ -66,73 +70,106 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title h1 { font-size: 1.8rem; color: var(--primary-dark); }
-        .page-title p { color: var(--gray); font-size: 0.9rem; }
-
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: var(--transition); border: none; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 5px 15px rgba(26, 95, 180, 0.2); }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .page-subtitle { color: var(--gray); font-size: 0.9rem; margin-bottom: 20px; }
         
-        /* ANNOUNCEMENT CARDS */
+        /* SECTION CARD */
+        .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: .85rem; cursor: pointer; transition: .2s; border: none; outline: none; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--light-gray); color: var(--dark); }
+        .btn-secondary:hover { background: #d1d9e6; }
+        
+        /* ANNOUNCEMENT GRID */
         .announcement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
-        .announcement-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); border: 1px solid transparent; display: flex; flex-direction: column; }
+        .announcement-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); border: 1px solid transparent; }
         .announcement-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .card-header { padding: 16px 20px; border-bottom: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .card-category { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); background: rgba(26,95,180,0.08); padding: 4px 10px; border-radius: 6px; }
+        .announcement-header { padding: 16px 20px; border-bottom: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .card-category { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); background: rgba(26,95,180,0.08); padding: 4px 10px; border-radius: 6px; }
         .card-category.penting { color: var(--danger); background: rgba(229,62,62,0.08); }
         .card-category.keuangan { color: var(--accent); background: rgba(229,165,10,0.08); }
         .card-category.akademik { color: var(--secondary); background: rgba(38,162,105,0.08); }
+        .card-category.umum { color: var(--info); background: rgba(14,165,233,0.08); }
 
         .card-actions { display: flex; gap: 6px; }
         .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--light); color: var(--gray); transition: var(--transition); cursor: pointer; border: none; }
         .btn-icon:hover { background: var(--primary); color: white; }
         .btn-icon.delete:hover { background: var(--danger); color: white; }
 
-        .card-body { padding: 20px; flex-grow: 1; }
-        .card-title { font-size: 1.15rem; font-weight: 700; color: var(--dark); margin-bottom: 10px; line-height: 1.4; }
-        .card-excerpt { font-size: 0.9rem; color: var(--gray); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px; }
+        .announcement-body { padding: 20px; flex-grow: 1; }
+        .announcement-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.4; }
+        .announcement-excerpt { font-size: 0.85rem; color: var(--gray); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px; line-height: 1.5; }
 
-        .card-footer { padding: 12px 20px; background: rgba(244, 247, 254, 0.5); border-top: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center; }
-        .meta-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--gray); font-weight: 500; }
-        .meta-item i { font-size: 0.9rem; opacity: 0.7; }
+        .announcement-footer { padding: 12px 20px; background: var(--light); border-top: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .meta-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--gray); font-weight: 500; }
+        .meta-item i { font-size: 0.8rem; opacity: 0.7; }
 
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
         .badge-everyone { background: rgba(139, 92, 246, 0.1); color: var(--purple); }
         .badge-ustadz { background: rgba(14, 165, 233, 0.1); color: var(--info); }
         .badge-ortu { background: rgba(229, 165, 10, 0.1); color: var(--accent); }
-        .badge-draft { background: #eee; color: #666; }
+        .badge-draft { background: rgba(113, 128, 150, 0.1); color: var(--gray); }
+        .badge-terbit { background: rgba(38, 162, 105, 0.1); color: var(--success); }
 
+        /* ALERT */
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); }
-        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); }
+        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
+        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
 
         /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
-        .modal-card { background: white; width: 100%; max-width: 650px; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
-        .modal-header { padding: 20px 25px; border-bottom: 1px solid var(--light-gray); display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 25px; max-height: 80vh; overflow-y: auto; }
-        .modal-footer { padding: 15px 25px; background: #f9fafb; border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; }
-
+        .modal-card { background: white; width: 100%; max-width: 600px; border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); background: var(--light); }
+        .modal-head h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
+        .btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray); padding: 5px; border-radius: 5px; transition: var(--transition); }
+        .btn-close:hover { background: var(--light-gray); color: var(--danger); }
+        .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
         .form-group { margin-bottom: 18px; }
-        .form-label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
-        .form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 8px; outline: none; transition: var(--transition); font-size: 0.9rem; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,95,180,0.1); }
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+        .form-label { display: block; font-size: .85rem; font-weight: 600; color: var(--dark); margin-bottom: 8px; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: .9rem; outline: none; transition: .2s; background: #fff; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,95,180,.15); }
         textarea.form-control { resize: vertical; min-height: 120px; }
+        .modal-foot { padding: 16px 24px; background: var(--light); border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-foot .btn { min-width: 100px; }
 
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
+        
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .empty-state i { font-size: 4rem; color: var(--light-gray); margin-bottom: 20px; }
+        .empty-state h3 { font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; font-weight: 600; }
+        .empty-state p { font-size: 0.95rem; }
         
         @media (max-width: 992px) {
             .mobile-menu-toggle { display: flex; }
             .dashboard-container { position: relative; }
-            .sidebar { position: absolute; left: -280px; height: 100%; }
+            .sidebar { position: absolute; left: -280px; height: 100%; box-shadow: none; }
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); }
             .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
             .announcement-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.5rem; }
+            .dashboard-content { padding: 20px 15px; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+            .announcement-header { flex-wrap: wrap; }
+            .modal-card { max-width: 95%; margin: 10px; }
+            .modal-head { padding: 15px; }
+            .modal-body { padding: 15px; }
+            .modal-foot { padding: 12px 15px; flex-direction: column; }
+            .modal-foot .btn { width: 100%; justify-content: center; }
+            .form-row { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
@@ -215,7 +252,10 @@
         </div>
 
         <!-- CONTENT -->
-        <main class="dashboard-content" id="mainContent">
+        <div class="dashboard-content" id="mainContent">
+            <h1 class="page-title"><i class="fas fa-bullhorn"></i> Pengumuman & Informasi</h1>
+            <p class="page-subtitle">Kelola pesan dan informasi untuk seluruh civitas PTQ Al-Hikmah.</p>
+
             <!-- ALERTS -->
             <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
@@ -223,25 +263,33 @@
             <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
             <?php endif; ?>
-
-            <div class="page-header">
-                <div class="page-title">
-                    <h1><i class="fas fa-bullhorn"></i> Pengumuman & Informasi</h1>
-                    <p>Kelola pesan dan informasi untuk civitas PTQ Al-Hikmah.</p>
+            <?php if (session()->getFlashdata('errors')): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div style="display:flex;flex-direction:column;">
+                        <?php foreach(session()->getFlashdata('errors') as $err): ?>
+                            <span><?= $err ?></span>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
+            <?php endif; ?>
+
+            <!-- BUTTON ADD -->
+            <div style="margin-bottom: 20px; text-align: right;">
                 <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fas fa-plus"></i> Buat Pengumuman
+                    <i class="fas fa-plus"></i> Buat Pengumuman Baru
                 </button>
             </div>
 
-            <div class="announcement-grid">
-                <?php if (!empty($riwayat)): ?>
-                    <?php foreach ($riwayat as $p): ?>
+            <!-- ANNOUNCEMENT GRID -->
+            <?php if(!empty($riwayat)): ?>
+                <div class="announcement-grid">
+                    <?php foreach($riwayat as $p): ?>
                         <div class="announcement-card">
-                            <div class="card-header">
-                                <span class="card-category <?= strtolower($p['kategori']) ?>"><?= $p['kategori'] ?></span>
+                            <div class="announcement-header">
+                                <span class="card-category <?= strtolower($p['kategori']) ?>"><?= htmlspecialchars($p['kategori']) ?></span>
                                 <div class="card-actions">
-                                    <button class="btn-icon" onclick='openEditModal(<?= json_encode($p) ?>)' title="Ubah">
+                                    <button class="btn-icon" onclick='openEditModal(<?= htmlspecialchars(json_encode($p)) ?>)' title="Edit">
                                         <i class="fas fa-pen"></i>
                                     </button>
                                     <a href="<?= base_url('admin/pengumuman/delete/' . $p['id']) ?>" class="btn-icon delete" onclick="return confirm('Hapus pengumuman ini?')" title="Hapus">
@@ -249,10 +297,13 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <h3 class="card-title"><?= $p['judul'] ?></h3>
-                                <div class="card-excerpt"><?= strip_tags($p['konten']) ?></div>
-                                <div style="display:flex; gap:10px;">
+                            <div class="announcement-body">
+                                <h3 class="announcement-title"><?= htmlspecialchars($p['judul']) ?></h3>
+                                <div class="announcement-excerpt">
+                                    <?= htmlspecialchars(substr(strip_tags($p['konten']), 0, 150)) ?>
+                                    <?php if(strlen(strip_tags($p['konten'])) > 150): ?>...<?php endif; ?>
+                                </div>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                     <?php 
                                         $rClass = 'badge-everyone'; $rIcon = 'fa-users'; $rLabel = 'Semua';
                                         if($p['target_role'] == 'ustadz') { $rClass = 'badge-ustadz'; $rIcon = 'fa-chalkboard-teacher'; $rLabel = 'Ustadz'; }
@@ -260,40 +311,44 @@
                                     ?>
                                     <span class="badge <?= $rClass ?>"><i class="fas <?= $rIcon ?>"></i> <?= $rLabel ?></span>
                                     <?php if($p['status'] == 'draft'): ?>
-                                        <span class="badge badge-draft">Draft</span>
+                                        <span class="badge badge-draft"><i class="fas fa-file-draft"></i> Draft</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-terbit"><i class="fas fa-globe"></i> Terbit</span>
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="card-footer">
+                            <div class="announcement-footer">
                                 <div class="meta-item">
                                     <i class="far fa-calendar-alt"></i>
-                                    <?= date('d M Y', strtotime($p['created_at'])) ?>
+                                    <?= date('d M Y H:i', strtotime($p['created_at'])) ?>
                                 </div>
                                 <div class="meta-item">
                                     <i class="far fa-user"></i>
-                                    <?= $p['nama_penulis'] ?>
+                                    <?= htmlspecialchars($p['nama_penulis'] ?? 'Admin') ?>
                                 </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
-                <?php else: ?>
-                    <div style="grid-column: 1/-1; text-align:center; padding:100px 20px; background:white; border-radius:12px; box-shadow: var(--shadow);">
-                        <i class="fas fa-bullhorn" style="font-size:4rem; color:var(--light-gray); margin-bottom:20px; opacity:0.3;"></i>
-                        <h3 style="color:var(--gray);">Belum Ada Pengumuman</h3>
-                        <p style="color:var(--gray); opacity:0.7;">Klik tombol "Buat Pengumuman" untuk memulai.</p>
+                </div>
+            <?php else: ?>
+                <div class="empty-state">
+                    <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-bullhorn" style="font-size: 3rem; color: var(--light-gray);"></i>
                     </div>
-                <?php endif; ?>
-            </div>
-        </main>
+                    <h3>Belum Ada Pengumuman</h3>
+                    <p>Klik tombol "Buat Pengumuman Baru" untuk memulai.</p>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
-    <!-- MODAL FORM -->
+    <!-- MODAL TAMBAH/EDIT PENGUMUMAN -->
     <div class="modal-overlay" id="announcementModal">
         <form id="announcementForm" action="<?= base_url('admin/pengumuman/store') ?>" method="post" class="modal-card">
             <?= csrf_field() ?>
-            <div class="modal-header">
-                <h3 id="modalTitle">Buat Pengumuman Baru</h3>
-                <button type="button" style="background:none; border:none; color:var(--gray); cursor:pointer; font-size:1.2rem;" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-head">
+                <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> Buat Pengumuman Baru</h3>
+                <button type="button" class="btn-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -301,7 +356,7 @@
                     <input type="text" name="judul" id="f_judul" class="form-control" required placeholder="Masukkan judul yang informatif...">
                 </div>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Kategori *</label>
                         <select name="kategori" id="f_kategori" class="form-control" required>
@@ -326,22 +381,25 @@
                     <textarea name="konten" id="f_konten" class="form-control" required placeholder="Tulis rincian pengumuman di sini..."></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Status *</label>
-                    <select name="status" id="f_status" class="form-control" required>
-                        <option value="terbit">Terbit (Langsung Publikasikan)</option>
-                        <option value="draft">Draft (Simpan Sementara)</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select name="status" id="f_status" class="form-control" required>
+                            <option value="terbit">Terbit (Langsung Publikasikan)</option>
+                            <option value="draft">Draft (Simpan Sementara)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" style="background:var(--light); color:var(--gray);" onclick="closeModal()">Batal</button>
+            <div class="modal-foot">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Pengumuman</button>
             </div>
         </form>
     </div>
 
     <script>
+        // Sidebar logic
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -373,43 +431,58 @@
             }
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Apakah Anda yakin ingin keluar?')) {
-                window.location.href = this.getAttribute('href');
-            }
-        });
+        // Logout confirmation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+                    window.location.href = this.getAttribute('href');
+                }
+            });
+        }
 
+        // Auto hide alerts
+        document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
+
+        // Modal functions
         const modal = document.getElementById('announcementModal');
         const form = document.getElementById('announcementForm');
-        const title = document.getElementById('modalTitle');
+        const modalTitle = document.getElementById('modalTitle');
 
         function openAddModal() {
-            title.innerText = 'Buat Pengumuman Baru';
+            modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Buat Pengumuman Baru';
             form.action = '<?= base_url('admin/pengumuman/store') ?>';
             form.reset();
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function openEditModal(data) {
-            title.innerText = 'Ubah Pengumuman';
+            modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Pengumuman';
             form.action = '<?= base_url('admin/pengumuman/update/') ?>' + data.id;
             
-            document.getElementById('f_judul').value = data.judul;
-            document.getElementById('f_kategori').value = data.kategori;
-            document.getElementById('f_target').value = data.target_role;
-            document.getElementById('f_konten').value = data.konten;
-            document.getElementById('f_status').value = data.status;
+            document.getElementById('f_judul').value = data.judul || '';
+            document.getElementById('f_kategori').value = data.kategori || 'Umum';
+            document.getElementById('f_target').value = data.target_role || 'semua';
+            document.getElementById('f_konten').value = data.konten || '';
+            document.getElementById('f_status').value = data.status || 'terbit';
 
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
             modal.classList.remove('active');
+            document.body.style.overflow = '';
         }
 
-        // Close alert auto
-        document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
     </script>
 </body>
 </html>

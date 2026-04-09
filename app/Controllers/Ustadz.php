@@ -9,6 +9,7 @@ class Ustadz extends BaseController
     protected $hafalanModel;
     protected $pengumumanModel;
     protected $jadwalModel;
+    protected $orangTuaModel;
 
     public function __construct()
     {
@@ -17,39 +18,193 @@ class Ustadz extends BaseController
         $this->hafalanModel = new \App\Models\HafalanModel();
         $this->pengumumanModel = new \App\Models\PengumumanModel();
         $this->jadwalModel = new \App\Models\JadwalModel();
+        $this->orangTuaModel = new \App\Models\OrangTuaModel();
     }
 
     public function dashboard()
     {
-        $pengumuman = $this->pengumumanModel->getPengumumanByRole('ustadz');
-        
-        $db = \Config\Database::connect();
         $id_ustadz = session()->get('id');
+        $db = \Config\Database::connect();
         
-        $total_kelas = $db->table('kelas')->where('id_ustadz', $id_ustadz)->countAllResults();
+        // Ensure 'nilai' column exists for statistics
+        if (!$db->fieldExists('nilai', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
+        }
+        if (!$db->fieldExists('kategori', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
+        }
         
-        $santri_diampu = $db->table('santri')
+        // 1. Ambil Stats Global
+        // Total Kelas Diajar (berdasarkan jadwal) - Fix for only_full_group_by
+        $total_kelas_row = $db->table('jadwal')
+            ->where('id_ustadz', $id_ustadz)
+            ->select('COUNT(DISTINCT id_kelas) AS total', false)
+            ->get()->getRow();
+        $total_kelas = $total_kelas_row->total ?? 0;
+        
+        // Total Santri Binaan (langsung atau via kelas)
+        $santri_binaan = $db->table('santri')
+            ->select('santri.id')
             ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
             ->groupEnd()
-            ->countAllResults();
+            ->get()->getResultArray();
+        
+        $santri_ids = array_column($santri_binaan, 'id');
+        $total_santri = count($santri_ids);
+        
+        // % Kehadiran Hari Ini
+        $kehadiran = 0;
+        if ($total_santri > 0) {
+            $present_count = $db->table('absensi')
+                ->whereIn('id_santri', $santri_ids)
+                ->where('tanggal', date('Y-m-d'))
+                ->whereIn('status', ['Hadir', 'Izin', 'Sakit']) // Anggap yang tidak Alpa itu 'hadir' dalam konteks partisipasi
+                ->countAllResults();
+            $kehadiran = round(($present_count / $total_santri) * 100);
+        }
+        
+        // Rata-rata Nilai Hafalan
+        $avg_nilai = 0;
+        if ($total_santri > 0) {
+            $avg_result = $db->table('hafalan')
+                ->whereIn('id_santri', $santri_ids)
+                ->selectAvg('nilai', 'rata_rata')
+                ->get()->getRow();
+            $avg_nilai = $avg_result->rata_rata ?? 0;
+        }
+        
+        // 2. Setoran Hafalan Terkini (5 Terakhir)
+        $recent_hafalan = [];
+        if ($total_santri > 0) {
+            $recent_hafalan = $db->table('hafalan')
+                ->select('hafalan.*, santri.nama_santri, santri.nis')
+                ->join('santri', 'santri.id = hafalan.id_santri')
+                ->whereIn('hafalan.id_santri', $santri_ids)
+                ->orderBy('hafalan.tanggal', 'DESC')
+                ->orderBy('hafalan.created_at', 'DESC')
+                ->limit(5)
+                ->get()->getResultArray();
+        }
+        
+        // 3. Pengumuman Terbar (Info Sekolah)
+        $pengumuman = $this->pengumumanModel->getPengumumanByRole('ustadz');
         
         $data = [
-            'judul' => 'Dashboard Ustadz',
-            'nama_ustadz' => session()->get('nama_lengkap') ?? 'Ustadz PTQ',
-            'pengumuman' => $pengumuman,
-            'total_kelas' => $total_kelas,
-            'total_santri_diampu' => $santri_diampu,
-            'jadwal_mengajar' => []
+            'judul'             => 'Dashboard Ustadz',
+            'today'             => date('d M Y'),
+            'nama_ustadz'       => session()->get('nama_lengkap') ?? 'Ustadz',
+            'total_santri'      => $total_santri,
+            'total_kelas'       => $total_kelas,
+            'kehadiran'         => $kehadiran,
+            'avg_nilai'         => number_format($avg_nilai, 1),
+            'recent_hafalan'    => $recent_hafalan,
+            'pengumuman'        => $pengumuman
         ];
+        
         return view('ustadz/dashboard', $data);
     }
 
     // =========================================================
     // NEW USTADZ PAGES (MOCKUP)
     // =========================================================
+    public function santri()
+    {
+        $id_ustadz = session()->get('id');
+        $db = \Config\Database::connect();
+        
+        $santri = $db->table('santri')
+            ->select('santri.*, kelas.nama_kelas')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->groupStart()
+                ->where('santri.id_ustadz', $id_ustadz)
+                ->orWhere('kelas.id_ustadz', $id_ustadz)
+            ->groupEnd()
+            ->orderBy('santri.nama_santri', 'ASC')
+            ->get()
+            ->getResultArray();
+            
+        $data = [
+            'judul' => 'Data Santri Binaan',
+            'santri' => $santri,
+            'nama_ustadz' => session()->get('nama_lengkap') ?? 'Ustadz'
+        ];
+        return view('ustadz/santri', $data);
+    }
+
+    public function santriDetail($id)
+    {
+        $id_ustadz = session()->get('id');
+        $db = \Config\Database::connect();
+        
+        // 1. Ambil data santri dasar & pastikan akses (dibimbing ustadz ini)
+        $santri = $db->table('santri')
+            ->select('santri.*, kelas.nama_kelas, kelas.id_ustadz as id_ustadz_kelas')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->where('santri.id', $id)
+            ->get()->getRowArray();
+            
+        if (!$santri) {
+            return redirect()->to('/ustadz/santri')->with('error', 'Santri tidak ditemukan.');
+        }
+        
+        // Validasi akses: harus ustadz pembimbing langsung atau wali kelas
+        if ($santri['id_ustadz'] != $id_ustadz && $santri['id_ustadz_kelas'] != $id_ustadz) {
+            return redirect()->to('/ustadz/santri')->with('error', 'Anda tidak memiliki akses ke data santri ini.');
+        }
+        
+        // 2. Ambil data Orang Tua
+        $parent = null;
+        if ($santri['id_ortu']) {
+            $parent = $this->orangTuaModel->where('id_user', $santri['id_ortu'])->first();
+        }
+        
+        // 3. Ambil Riwayat Hafalan (10 Terakhir)
+        $riwayat_hafalan = $this->hafalanModel
+            ->where('id_santri', $id)
+            ->orderBy('tanggal', 'DESC')
+            ->limit(10)
+            ->findAll();
+            
+        // 4. Statistik Absensi (Rekap)
+        $rekap_absensi = $db->table('absensi')
+            ->select('status, COUNT(*) as jumlah')
+            ->where('id_santri', $id)
+            ->groupBy('status')
+            ->get()->getResultArray();
+            
+        $stats_absensi = [
+            'Hadir' => 0, 'Izin' => 0, 'Sakit' => 0, 'Alpa' => 0, 'Total' => 0
+        ];
+        foreach ($rekap_absensi as $r) {
+            if (isset($stats_absensi[$r['status']])) {
+                $stats_absensi[$r['status']] = (int)$r['jumlah'];
+            }
+            $stats_absensi['Total'] += (int)$r['jumlah'];
+        }
+        
+        // 5. Rata-rata Nilai
+        $avg_result = $db->table('hafalan')
+            ->where('id_santri', $id)
+            ->selectAvg('nilai', 'rata_rata')
+            ->get()->getRow();
+        $avg_nilai = $avg_result->rata_rata ?? 0;
+            
+        $data = [
+            'judul'           => 'Detail Santri: ' . $santri['nama_santri'],
+            'santri'          => $santri,
+            'parent'          => $parent,
+            'riwayat_hafalan' => $riwayat_hafalan,
+            'stats_absensi'   => $stats_absensi,
+            'avg_nilai'       => number_format($avg_nilai, 1),
+            'nama_ustadz'     => session()->get('nama_lengkap') ?? 'Ustadz'
+        ];
+        
+        return view('ustadz/santri_detail', $data);
+    }
+
     public function kelas()
     {
         $id_ustadz = session()->get('id');
@@ -190,6 +345,15 @@ class Ustadz extends BaseController
 
     public function storeHafalan()
     {
+        $db = \Config\Database::connect();
+        
+        if (!$db->fieldExists('nilai', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
+        }
+        if (!$db->fieldExists('kategori', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
+        }
+        
         $rules = [
             'id_santri' => 'required|integer',
             'surah' => 'required',
@@ -209,6 +373,8 @@ class Ustadz extends BaseController
             'ayat_awal' => $this->request->getPost('ayat_awal'),
             'ayat_akhir' => $this->request->getPost('ayat_akhir'),
             'status' => $this->request->getPost('status'),
+            'nilai' => $this->request->getPost('nilai') ?: 0,
+            'kategori' => 'Hafalan Baru',
             'id_ustadz' => session()->get('id'),
             'keterangan' => $this->request->getPost('keterangan')
         ]);
@@ -283,6 +449,145 @@ class Ustadz extends BaseController
             'judul' => 'Jadwal Mengajar',
             'jadwal' => $jadwal
         ];
-        return view('ustadz/jadwal', $data);
+    }
+    
+    public function murojaah()
+    {
+        $id_ustadz = session()->get('id');
+        $db = \Config\Database::connect();
+        
+        if (!$db->fieldExists('nilai', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
+        }
+        if (!$db->fieldExists('kategori', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
+        }
+        
+        $riwayatMurojaah = $db->table('hafalan')
+            ->select('hafalan.*, santri.nama_santri, santri.nis, kelas.nama_kelas')
+            ->join('santri', 'santri.id = hafalan.id_santri', 'left')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->where('hafalan.id_ustadz', $id_ustadz)
+            ->where('hafalan.kategori', 'Murojaah')
+            ->orderBy('hafalan.tanggal', 'DESC')
+            ->get()
+            ->getResultArray();
+            
+        // Ambil santri yang dibimbing untuk opsi tambah
+        $santri = $db->table('santri')
+            ->select('santri.id, santri.nama_santri')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->groupStart()
+                ->where('santri.id_ustadz', $id_ustadz)
+                ->orWhere('kelas.id_ustadz', $id_ustadz)
+            ->groupEnd()
+            ->orderBy('santri.nama_santri', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $data = [
+            'judul' => 'Muroja\'ah Santri',
+            'riwayat' => $riwayatMurojaah,
+            'santriList' => $santri
+        ];
+
+        return view('ustadz/murojaah', $data);
+    }
+
+    public function storeMurojaah()
+    {
+        $db = \Config\Database::connect();
+        
+        if (!$db->fieldExists('nilai', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
+        }
+        if (!$db->fieldExists('kategori', 'hafalan')) {
+            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
+        }
+        
+        $rules = [
+            'id_santri' => 'required|integer',
+            'surah' => 'required',
+            'ayat_awal' => 'required|integer',
+            'ayat_akhir' => 'required|integer',
+            'status' => 'required|in_list[Lancar,Sedang,Mengulang]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $this->hafalanModel->save([
+            'id_santri' => $this->request->getPost('id_santri'),
+            'tanggal' => $this->request->getPost('tanggal') ?: date('Y-m-d'),
+            'surah' => $this->request->getPost('surah'),
+            'ayat_awal' => $this->request->getPost('ayat_awal'),
+            'ayat_akhir' => $this->request->getPost('ayat_akhir'),
+            'status' => $this->request->getPost('status'),
+            'nilai' => $this->request->getPost('nilai') ?: 0,
+            'kategori' => 'Murojaah',
+            'id_ustadz' => session()->get('id'),
+            'keterangan' => $this->request->getPost('keterangan')
+        ]);
+
+        return redirect()->to('/ustadz/murojaah')->with('success', 'Catatan muroja\'ah berhasil ditambahkan.');
+    }
+
+    public function progresKelas()
+    {
+        $id_ustadz = session()->get('id');
+        $db = \Config\Database::connect();
+        
+        // Ambil kelas yang diampu ustadz
+        $kelas = $db->table('kelas')
+            ->select('kelas.*')
+            ->where('id_ustadz', $id_ustadz)
+            ->get()
+            ->getResultArray();
+            
+        $progres = [];
+        foreach($kelas as $k) {
+            $id_kelas = $k['id'];
+            
+            // Total Santri di kelas
+            $total_santri = $db->table('santri')
+                ->where('id_kelas', $id_kelas)
+                ->countAllResults();
+                
+            // Hitung rata-rata progres
+            $stats = $db->table('hafalan')
+                ->selectAvg('nilai', 'avg_nilai')
+                ->selectCount('hafalan.id', 'total_setoran')
+                ->join('santri', 'santri.id = hafalan.id_santri')
+                ->where('santri.id_kelas', $id_kelas)
+                ->get()
+                ->getRowArray();
+                
+            // Top student
+            $top_student = $db->table('hafalan')
+                ->select('santri.nama_santri, count(hafalan.id) as total')
+                ->join('santri', 'santri.id = hafalan.id_santri')
+                ->where('santri.id_kelas', $id_kelas)
+                ->groupBy('hafalan.id_santri')
+                ->orderBy('total', 'DESC')
+                ->limit(1)
+                ->get()
+                ->getRowArray();
+                
+            $progres[] = [
+                'kelas' => $k,
+                'total_santri' => $total_santri,
+                'avg_nilai' => number_format($stats['avg_nilai'] ?? 0, 1),
+                'total_setoran' => $stats['total_setoran'] ?? 0,
+                'top_student' => $top_student['nama_santri'] ?? '-'
+            ];
+        }
+        
+        $data = [
+            'judul' => 'Progres Kelas',
+            'progres' => $progres
+        ];
+        
+        return view('ustadz/progres_kelas', $data);
     }
 }

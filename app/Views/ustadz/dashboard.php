@@ -6,18 +6,17 @@
     <title>Dashboard Ustadz - PTQ Al-Hikmah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* VARIABLES & RESET - Consistent with Hafalan Page */
+        /* VARIABLES & RESET - Consistent with All Pages */
         :root {
             --primary: #1a5fb4; --primary-dark: #1c3d78; --secondary: #26a269;
-            --accent: #e5a50a; --light: #f8f9fa; --dark: #2d3748;
-            --gray: #718096; --light-gray: #e2e8f0; --danger: #e53e3e;
+            --accent: #e5a50a; --light: #f8f9fa; --gray: #718096;
+            --light-gray: #e2e8f0; --dark: #2d3748; --danger: #e53e3e;
             --success: #38a169; --warning: #dd6b20; --info: #0ea5e9;
-            --purple: #8b5cf6; --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --purple: #8b5cf6; --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --radius: 8px; --transition: all 0.3s ease;
         }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f5f7fa; color: var(--dark); line-height: 1.6; overflow-x: hidden; }
+        body { background-color: #f5f7fa; color: var(--dark); overflow-x: hidden; line-height: 1.6; }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
         .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
@@ -31,7 +30,7 @@
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
-        .mobile-menu-toggle { display: none; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.4rem; width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; transition: var(--transition); align-items: center; justify-content: center; }
+        .mobile-menu-toggle { display: none; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.4rem; width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; align-items: center; justify-content: center; transition: var(--transition); }
         .mobile-menu-toggle:hover { background: rgba(255, 255, 255, 0.25); }
         
         .user-section { display: flex; align-items: center; gap: 15px; }
@@ -70,14 +69,14 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 25px; display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -0.5px; }
         
         /* SECTION CARD */
         .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
-        /* STATS CARDS - 4 cards in one row like QUICK ACTIONS */
+        /* STATS CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -113,21 +112,24 @@
         }
         
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--gray);
-            font-weight: 500;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-icon {
             width: 55px;
             height: 55px;
             border-radius: 12px;
-            background: rgba(26, 95, 180, 0.1);
+            background: rgba(26, 95, 180, 0.08);
             color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.6rem;
+            box-shadow: inset 0 0 0 1px rgba(26, 95, 180, 0.1);
         }
         
         /* QUICK ACTIONS */
@@ -164,6 +166,7 @@
             justify-content: center;
             font-size: 1.4rem;
             color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
         
         .action-info {
@@ -189,16 +192,26 @@
         .table td { padding: 14px 24px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
         .table tr:hover { background: #f8fafc; }
         
-        .jadwal-time { font-family: monospace; font-weight: 700; color: var(--primary); font-size: 0.85rem; }
+        .student-cell { display: flex; flex-direction: column; }
+        .student-name { font-weight: 700; color: var(--primary-dark); font-size: 0.9rem; }
+        .student-nis { font-size: 0.7rem; color: var(--gray); font-family: monospace; margin-top: 2px; }
         
-        /* BADGES */
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .badge-primary { background: rgba(26, 95, 180, 0.1); color: var(--primary); }
-        .badge-success { background: rgba(38, 162, 105, 0.1); color: var(--success); }
+        .score-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: rgba(229, 165, 10, 0.1);
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(229, 165, 10, 0.15);
+        }
         
         /* ANNOUNCEMENT STYLES */
         .announcement-item {
-            padding: 20px 24px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--light-gray);
             transition: var(--transition);
         }
@@ -208,12 +221,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .announcement-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--primary-dark);
         }
@@ -224,57 +237,78 @@
             font-weight: 600;
             background: rgba(229, 165, 10, 0.1);
             color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         .announcement-content {
             color: var(--dark);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 10px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
         }
         .announcement-date {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--gray);
             display: flex;
             align-items: center;
             gap: 6px;
         }
         
-        /* WELCOME CARD */
-        .welcome-card {
+        /* WELCOME BANNER */
+        .welcome-banner {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: var(--radius);
-            padding: 25px 30px;
+            border-radius: 12px;
+            padding: 35px 40px;
             margin-bottom: 30px;
             color: white;
-        }
-        .welcome-card h2 { font-size: 1.5rem; margin-bottom: 8px; }
-        .welcome-card p { opacity: 0.9; margin-bottom: 15px; }
-        .welcome-stats {
             display: flex;
-            gap: 25px;
-            margin-top: 10px;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 10px 20px rgba(26, 95, 180, 0.2);
+            position: relative;
+            overflow: hidden;
         }
-        .welcome-stat {
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .welcome-banner h2 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; }
+        .welcome-banner p { opacity: 0.9; margin-bottom: 0; font-size: 1rem; max-width: 600px; }
+        .banner-date {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 30px;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .welcome-stat i { font-size: 1rem; opacity: 0.8; }
-        .welcome-stat span { font-weight: 600; }
         
-        /* ALERT STYLES */
+        /* ALERT */
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border-left: 4px solid var(--success); }
-        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border-left: 4px solid var(--danger); }
+        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
         
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
         
         /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+        }
+        
         @media (max-width: 992px) {
             .mobile-menu-toggle { display: flex; }
             .dashboard-container { position: relative; }
@@ -289,12 +323,13 @@
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
-            .welcome-card { padding: 20px; }
-            .welcome-card h2 { font-size: 1.2rem; }
-            .welcome-stats { gap: 12px; }
-            .welcome-stat { padding: 6px 12px; font-size: 0.8rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: 1fr; }
+            .welcome-banner { padding: 20px; flex-direction: column; align-items: flex-start; }
+            .welcome-banner h2 { font-size: 1.2rem; }
             .table thead { display: none; }
-            .table tr { display: block; margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; }
+            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+            .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
             .table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
             .table td:last-child { border-bottom: none; }
             .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; width: 40%; }
@@ -302,15 +337,11 @@
         }
         
         @media (max-width: 576px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .quick-actions { grid-template-columns: 1fr; }
             .stat-card { padding: 15px; }
             .stat-value { font-size: 1.6rem; }
             .stat-icon { width: 45px; height: 45px; font-size: 1.3rem; }
             .action-card { padding: 15px; }
             .action-icon { width: 45px; height: 45px; font-size: 1.2rem; }
-            .announcement-header { flex-direction: column; align-items: flex-start; }
-            .announcement-title { font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -376,221 +407,220 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="welcome-text">Selamat Datang,</div>
+                <div class="welcome-text">Selamat Mengajar,</div>
                 <div class="admin-name"><?= htmlspecialchars(session()->get('nama_lengkap') ?? 'Ustadz') ?></div>
             </div>
             
             <div class="sidebar-menu">
-                <div class="menu-item active"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/kelas') ?>"><i class="fas fa-chalkboard"></i><span>Kelas Saya</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-calendar-check"></i><span>Absensi Santri</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-quran"></i><span>Nilai Hafalan</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal Mengajar</span></a></div>
+                <div class="menu-item active"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-th-large"></i><span>Dashboard</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/santri') ?>"><i class="fas fa-graduation-cap"></i><span>Santri Binaan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-user-check"></i><span>Absensi Santri</span></a></div>
+                
+                <div style="padding: 15px 15px 5px; color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Manajemen Hafalan</div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/murojaah') ?>"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
             </div>
         </div>
 
         <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
-            <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard Ustadz</h1>
+            <h1 class="page-title"><i class="fas fa-th-large"></i> Dashboard Ustadz</h1>
 
             <!-- Alert Messages -->
             <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
             <?php endif; ?>
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
-            <?php endif; ?>
 
-            <!-- WELCOME CARD -->
-            <div class="welcome-card">
-                <h2>Assalamu'alaikum, <?= htmlspecialchars(session()->get('nama_lengkap') ?? 'Ustadz') ?>!</h2>
-                <p>Selamat datang di Dashboard PTQ Al-Hikmah. Kelola kegiatan mengajar Anda dengan mudah.</p>
-                <div class="welcome-stats">
-                    <div class="welcome-stat"><i class="fas fa-school"></i> <span><?= $total_kelas ?? 0 ?> Kelas</span></div>
-                    <div class="welcome-stat"><i class="fas fa-users"></i> <span><?= $total_santri_diampu ?? 0 ?> Santri</span></div>
-                    <div class="welcome-stat"><i class="fas fa-calendar-week"></i> <span><?= $total_jadwal ?? 0 ?> Jadwal Aktif</span></div>
+            <!-- WELCOME BANNER -->
+            <div class="welcome-banner">
+                <div>
+                    <h2>Assalamu'alaikum, <?= htmlspecialchars(session()->get('nama_lengkap') ?? 'Ustadz') ?>!</h2>
+                    <p>Selamat datang kembali di sistem manajemen PTQ Al-Hikmah. Mari bantu santri mencapai target hafalannya hari ini.</p>
+                </div>
+                <div class="banner-date">
+                    <i class="fas fa-calendar-check"></i>
+                    <?= date('d F Y') ?>
                 </div>
             </div>
 
-            <!-- PENGUMUMAN SECTION -->
-            <?php if(!empty($pengumuman)): ?>
-            <div class="section-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(229,165,10,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-bullhorn"></i>
-                        </div>
-                        Pengumuman Terbaru
-                    </div>
-                </div>
-                <?php foreach($pengumuman as $p): ?>
-                <div class="announcement-item">
-                    <div class="announcement-header">
-                        <div class="announcement-title"><?= htmlspecialchars($p['judul'] ?? 'Pengumuman') ?></div>
-                        <span class="announcement-badge"><i class="fas fa-tag"></i> <?= htmlspecialchars($p['kategori'] ?? 'Informasi') ?></span>
-                    </div>
-                    <div class="announcement-content">
-                        <?= nl2br(htmlspecialchars(substr($p['konten'] ?? '', 0, 200))) ?>
-                        <?php if(strlen($p['konten'] ?? '') > 200): ?>...<?php endif; ?>
-                    </div>
-                    <div class="announcement-date">
-                        <i class="fas fa-calendar"></i> <?= date('d/m/Y H:i', strtotime($p['created_at'] ?? 'now')) ?>
-                        <i class="fas fa-user" style="margin-left: 12px;"></i> <?= htmlspecialchars($p['nama_penulis'] ?? 'Admin') ?>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-
-            <!-- STATS CARDS - 4 CARDS IN ONE ROW -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <div class="stat-value"><?= $total_kelas ?? 0 ?></div>
-                        <div class="stat-label">Total Kelas Diampu</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-school"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <div class="stat-value"><?= $total_santri_diampu ?? 0 ?></div>
-                        <div class="stat-label">Total Santri Diampu</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <div class="stat-value"><?= $hadir_hari_ini ?? 0 ?></div>
-                        <div class="stat-label">Hadir Hari Ini</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <div class="stat-value"><?= $total_setoran_bulan_ini ?? 0 ?></div>
-                        <div class="stat-label">Setoran Bulan Ini</div>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-book-open"></i></div>
-                </div>
-            </div>
-
-            <!-- QUICK ACTIONS - 4 CARDS IN ONE ROW -->
+            <!-- QUICK ACTIONS -->
             <div class="quick-actions">
                 <div class="action-card" onclick="window.location.href='<?= base_url('ustadz/absensi') ?>'">
-                    <div class="action-icon" style="background: var(--primary);"><i class="fas fa-calendar-check"></i></div>
+                    <div class="action-icon" style="background: var(--primary);"><i class="fas fa-clipboard-list"></i></div>
                     <div class="action-info">
-                        <div class="action-title">Input Absensi</div>
+                        <div class="action-title">Isi Absensi</div>
                         <div class="action-desc">Catat kehadiran santri</div>
                     </div>
                 </div>
                 <div class="action-card" onclick="window.location.href='<?= base_url('ustadz/hafalan') ?>'">
-                    <div class="action-icon" style="background: var(--success);"><i class="fas fa-quran"></i></div>
+                    <div class="action-icon" style="background: var(--success);"><i class="fas fa-plus-circle"></i></div>
                     <div class="action-info">
-                        <div class="action-title">Input Hafalan</div>
-                        <div class="action-desc">Catat perkembangan hafalan</div>
+                        <div class="action-title">Catat Setoran</div>
+                        <div class="action-desc">Input hafalan santri</div>
+                    </div>
+                </div>
+                <div class="action-card" onclick="window.location.href='<?= base_url('ustadz/santri') ?>'">
+                    <div class="action-icon" style="background: var(--warning);"><i class="fas fa-users"></i></div>
+                    <div class="action-info">
+                        <div class="action-title">Santri Binaan</div>
+                        <div class="action-desc">Lihat daftar santri</div>
                     </div>
                 </div>
                 <div class="action-card" onclick="window.location.href='<?= base_url('ustadz/jadwal') ?>'">
-                    <div class="action-icon" style="background: var(--warning);"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="action-icon" style="background: var(--info);"><i class="fas fa-calendar-alt"></i></div>
                     <div class="action-info">
                         <div class="action-title">Jadwal Saya</div>
                         <div class="action-desc">Lihat jadwal mengajar</div>
                     </div>
                 </div>
-                <div class="action-card" onclick="window.location.href='<?= base_url('ustadz/kelas') ?>'">
-                    <div class="action-icon" style="background: var(--info);"><i class="fas fa-chalkboard"></i></div>
-                    <div class="action-info">
-                        <div class="action-title">Kelas Saya</div>
-                        <div class="action-desc">Lihat daftar santri</div>
+            </div>
+
+            <!-- STATS CARDS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value"><?= $total_santri ?? 0 ?></div>
+                        <div class="stat-label">Santri Binaan</div>
                     </div>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value"><?= $total_kelas ?? 0 ?></div>
+                        <div class="stat-label">Kelas Diajar</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-door-open"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value"><?= $kehadiran ?? 0 ?>%</div>
+                        <div class="stat-label">Kehadiran Hari Ini</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value"><?= $avg_nilai ?? 0 ?></div>
+                        <div class="stat-label">Rata-rata Nilai</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
                 </div>
             </div>
 
-            <!-- JADWAL HARI INI SECTION -->
-            <?php if(!empty($jadwal_hari_ini)): ?>
-            <div class="section-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-calendar-day"></i>
+            <!-- DASHBOARD GRID: 2 COLUMNS -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px;">
+                <!-- LEFT: RECENT HAFALAN -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            Setoran Hafalan Terkini
                         </div>
-                        Jadwal Mengajar Hari Ini
+                        <a href="<?= base_url('ustadz/hafalan') ?>" style="color:var(--primary); font-size:0.85rem;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
                     </div>
-                    <a href="<?= base_url('ustadz/jadwal') ?>" style="color:var(--primary); font-size:0.85rem;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr><th>Santri</th><th>Hafalan</th><th>Nilai</th><th>Tanggal</th></tr>
+                            </thead>
+                            <tbody>
+                                <?php if(!empty($recent_hafalan)): ?>
+                                    <?php foreach($recent_hafalan as $h): ?>
+                                    <tr>
+                                        <td data-label="Santri">
+                                            <div class="student-cell">
+                                                <span class="student-name"><?= htmlspecialchars($h['nama_santri']) ?></span>
+                                                <span class="student-nis"><?= htmlspecialchars($h['nis'] ?? '-') ?></span>
+                                            </div>
+                                        </td>
+                                        <td data-label="Hafalan">
+                                            <div style="font-weight: 600;"><?= htmlspecialchars($h['surah']) ?></div>
+                                            <div style="font-size: 0.75rem; color: var(--gray);">Ayat <?= $h['ayat_awal'] ?> - <?= $h['ayat_akhir'] ?></div>
+                                        </td>
+                                        <td data-label="Nilai"><span class="score-badge"><?= number_format($h['nilai'], 1) ?></span></td>
+                                        <td data-label="Tanggal" style="color: var(--gray);"><?= date('d M Y', strtotime($h['tanggal'])) ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--gray);">Belum ada setoran tercatat.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr><th>Mata Pelajaran</th><th>Kelas</th><th>Jam</th><th>Ruangan</th><th>Status</th></tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($jadwal_hari_ini as $j): ?>
-                            <tr>
-                                <td data-label="Mata Pelajaran"><strong><?= htmlspecialchars($j['mata_pelajaran'] ?? $j['nama_kegiatans'] ?? '-') ?></strong></td>
-                                <td data-label="Kelas"><?= htmlspecialchars($j['nama_kelas'] ?? '-') ?></td>
-                                <td data-label="Jam"><span class="jadwal-time"><?= substr($j['jam_mulai'] ?? '', 0, 5) ?> - <?= substr($j['jam_selesai'] ?? '', 0, 5) ?></span></td>
-                                <td data-label="Ruangan"><?= htmlspecialchars($j['ruangan'] ?? '-') ?></td>
-                                <td data-label="Status"><span class="badge badge-success"><i class="fas fa-check-circle"></i> Aktif</span></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <?php endif; ?>
 
-            <!-- KELAS YANG DIAMPU -->
-            <?php if(!empty($kelas)): ?>
-            <div class="section-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-chalkboard"></i>
+                <!-- RIGHT: PENGUMUMAN -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div style="width:36px;height:36px;border-radius:8px;background:rgba(229,165,10,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            Pengumuman Terbaru
                         </div>
-                        Kelas yang Diampu
                     </div>
-                    <a href="<?= base_url('ustadz/kelas') ?>" style="color:var(--primary); font-size:0.85rem;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr><th>Nama Kelas</th><th>Jumlah Santri</th><th>Wali Kelas</th><th>Tahun Ajaran</th></tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($kelas as $k): ?>
-                            <tr>
-                                <td data-label="Nama Kelas"><strong><?= htmlspecialchars($k['nama_kelas']) ?></strong></td>
-                                <td data-label="Jumlah Santri"><span class="badge badge-primary"><i class="fas fa-users"></i> <?= $k['jumlah_santri'] ?? 0 ?> Santri</span></td>
-                                <td data-label="Wali Kelas"><?= htmlspecialchars($k['nama_wali_kelas'] ?? '-') ?></td>
-                                <td data-label="Tahun Ajaran"><?= htmlspecialchars($k['tahun_ajaran'] ?? date('Y')) ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <?php if(!empty($pengumuman)): ?>
+                        <?php foreach($pengumuman as $p): ?>
+                        <div class="announcement-item">
+                            <div class="announcement-header">
+                                <div class="announcement-title"><?= htmlspecialchars($p['judul'] ?? 'Pengumuman') ?></div>
+                                <span class="announcement-badge"><i class="fas fa-tag"></i> <?= htmlspecialchars($p['kategori'] ?? 'Informasi') ?></span>
+                            </div>
+                            <div class="announcement-content">
+                                <?= nl2br(htmlspecialchars(substr($p['konten'] ?? '', 0, 120))) ?>
+                                <?php if(strlen($p['konten'] ?? '') > 120): ?>...<?php endif; ?>
+                            </div>
+                            <div class="announcement-date">
+                                <i class="fas fa-calendar"></i> <?= date('d/m/Y H:i', strtotime($p['created_at'] ?? 'now')) ?>
+                                <i class="fas fa-user" style="margin-left: 8px;"></i> <?= htmlspecialchars($p['nama_penulis'] ?? 'Admin') ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div style="text-align:center; padding:40px; color:var(--gray);">
+                            <i class="fas fa-bullhorn" style="font-size:2rem; margin-bottom:10px; opacity:0.3;"></i>
+                            <p>Tidak ada pengumuman terbaru.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php endif; ?>
 
             <!-- INFORMASI DASHBOARD -->
-            <div class="section-card">
-                <div class="card-header">
+            <div class="section-card" style="margin-top: 22px; border-top: 4px solid var(--info);">
+                <div class="card-header" style="background: rgba(14, 165, 233, 0.02);">
                     <div class="card-title">
                         <div style="width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.1);color:var(--info);display:flex;align-items:center;justify-content:center;">
                             <i class="fas fa-info-circle"></i>
                         </div>
-                        Informasi Dashboard
+                        Panduan Cepat Dashboard
                     </div>
                 </div>
-                <div style="padding: 20px 24px;">
-                    <p style="margin-bottom: 12px;">Dashboard Ustadz PTQ Al-Hikmah memungkinkan Anda untuk:</p>
-                    <ul style="margin-left: 20px; margin-bottom: 15px;">
-                        <li>• Mengelola kehadiran Santri</li>
-                        <li>• Mencatat hafalan Al-Qur'an</li>
-                        <li>• Melihat jadwal mengajar</li>
-                        <li>• Mengelola kelas yang diampu</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--light-gray);">Anda memiliki <strong><?= $total_kelas ?? 0 ?></strong> kelas dan <strong><?= $total_santri_diampu ?? 0 ?></strong> Santri yang diampu. Gunakan menu di sebelah kiri atau tombol aksi cepat untuk memulai.</p>
+                <div style="padding: 24px;">
+                    <p style="margin-bottom: 15px; color: var(--gray); font-size: 0.95rem;">Gunakan dashboard ini untuk memantau aktivitas harian santri bimbingan Anda:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                            <i class="fas fa-check-double" style="color: var(--success); margin-top: 4px;"></i>
+                            <div>
+                                <span style="display: block; font-weight: 700; font-size: 0.9rem;">Manajemen Kehadiran</span>
+                                <span style="font-size: 0.8rem; color: var(--gray);">Pastikan absensi diisi setiap hari sebelum kelas dimulai.</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                            <i class="fas fa-star" style="color: var(--accent); margin-top: 4px;"></i>
+                            <div>
+                                <span style="display: block; font-weight: 700; font-size: 0.9rem;">Pencatatan Hafalan</span>
+                                <span style="font-size: 0.8rem; color: var(--gray);">Input nilai kelancaran dan surat yang sedang dihafal.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--light-gray); font-size: 0.85rem; color: var(--gray);">
+                        Saat ini Anda mengampu <strong><?= $total_kelas ?? 0 ?> kelas</strong> dengan total <strong><?= $total_santri ?? 0 ?> santri</strong>.
+                    </p>
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -638,17 +668,6 @@
                 }
             });
         }
-        
-        // Close sidebar when clicking on menu item (mobile)
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 992) {
-                    sidebar.classList.remove('active');
-                    sidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-        });
         
         // Auto hide alerts after 5 seconds
         document.querySelectorAll('.alert').forEach(alert => {

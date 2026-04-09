@@ -14,6 +14,7 @@ class Admin extends BaseController
     protected $pembayaranModel;
     protected $pengumumanModel;
     protected $jadwalModel;
+    protected $orangTuaModel;
 
     public function __construct()
     {
@@ -25,6 +26,7 @@ class Admin extends BaseController
         $this->pembayaranModel = new \App\Models\PembayaranModel();
         $this->pengumumanModel = new \App\Models\PengumumanModel();
         $this->jadwalModel     = new \App\Models\JadwalModel();
+        $this->orangTuaModel   = new \App\Models\OrangTuaModel();
     }
 
     // =========================================================
@@ -255,6 +257,38 @@ class Admin extends BaseController
     }
 
     // =========================================================
+    // USER MANAGEMENT - DETAIL
+    // =========================================================
+    public function userDetail($id)
+    {
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            return redirect()->to('/admin/users')->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        $profile = null;
+        $extraData = [];
+
+        if ($user['role'] === 'ustadz') {
+            $profile = $this->ustadzModel->where('id_user', $id)->first();
+            $extraData['kelas'] = $this->kelasModel->where('id_ustadz', $id)->findAll();
+        } elseif ($user['role'] === 'ortu') {
+            $profile = $this->orangTuaModel->where('id_user', $id)->first();
+            $extraData['santri'] = $this->santriModel->where('id_ortu', $id)->findAll();
+        }
+
+        $data = [
+            'judul'      => 'Detail Pengguna',
+            'nama_admin' => session()->get('nama_lengkap') ?? 'Admin PTQ',
+            'user'       => $user,
+            'profile'    => $profile,
+            'extraData'  => $extraData
+        ];
+
+        return view('admin/user_detail', $data);
+    }
+
+    // =========================================================
     // NEW ADMIN PAGES (MOCKUP)
     // =========================================================
     public function santri()
@@ -295,6 +329,45 @@ class Admin extends BaseController
         ]);
 
         return redirect()->to('/admin/santri')->with('success', 'Santri berhasil ditambahkan.');
+    }
+
+    // =========================================================
+    // DATA SANTRI - DETAIL
+    // =========================================================
+    public function santriDetail($id)
+    {
+        // Get santri with class and parent info
+        $santri = $this->santriModel->select('santri.*, kelas.nama_kelas, ortu.nama_lengkap as nama_ortu')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->join('users as ortu', 'ortu.id = santri.id_ortu', 'left')
+            ->find($id);
+
+        if (!$santri) {
+            return redirect()->to('/admin/santri')->with('error', 'Data santri tidak ditemukan.');
+        }
+
+        // Get riwayat hafalan
+        $riwayat = $this->hafalanModel->select('hafalan.*, ustadz.nama_lengkap as nama_penguji')
+            ->join('ustadz', 'ustadz.id = hafalan.id_ustadz', 'left')
+            ->where('id_santri', $id)
+            ->orderBy('tanggal', 'DESC')
+            ->findAll();
+
+        // Get parent profile if linked
+        $parentProfile = null;
+        if ($santri['id_ortu']) {
+            $parentProfile = $this->orangTuaModel->where('id_user', $santri['id_ortu'])->first();
+        }
+
+        $data = [
+            'judul'      => 'Detail Santri',
+            'nama_admin' => session()->get('nama_lengkap') ?? 'Admin PTQ',
+            'santri'     => $santri,
+            'riwayat'    => $riwayat,
+            'parent'     => $parentProfile
+        ];
+
+        return view('admin/santri_detail', $data);
     }
 
     public function updateSantri($id)
@@ -373,6 +446,38 @@ class Admin extends BaseController
         ]);
 
         return redirect()->to('/admin/ustadz')->with('success', 'Profil Ustadz berhasil ditambahkan.');
+    }
+
+    // =========================================================
+    // DATA USTADZ - DETAIL
+    // =========================================================
+    public function ustadzDetail($id)
+    {
+        // Get ustadz profile join with user account
+        $ustadz = $this->ustadzModel->select('ustadz.*, users.username, users.email')
+            ->join('users', 'users.id = ustadz.id_user', 'left')
+            ->where('ustadz.id', $id)
+            ->first();
+
+        if (!$ustadz) {
+            return redirect()->to('/admin/ustadz')->with('error', 'Profil Ustadz tidak ditemukan.');
+        }
+
+        // Get managed classes
+        $kelas = $this->kelasModel->where('id_ustadz', $ustadz['id_user'])->findAll();
+
+        // Get schedule
+        $jadwal = $this->jadwalModel->getJadwalByUstadz($ustadz['id_user']);
+
+        $data = [
+            'judul'      => 'Detail Profil Pengajar',
+            'nama_admin' => session()->get('nama_lengkap') ?? 'Admin PTQ',
+            'ustadz'     => $ustadz,
+            'kelas'      => $kelas,
+            'jadwal'     => $jadwal
+        ];
+
+        return view('admin/ustadz_detail', $data);
     }
 
     public function updateUstadz($id)
@@ -490,15 +595,44 @@ class Admin extends BaseController
 
     public function pembayaran()
     {
+        $db = \Config\Database::connect();
+        
+        // 1. Ambil Stats Global
+        $totalMasuk = $db->table('pembayaran')->where('status', 'Lunas')->selectSum('jumlah')->get()->getRow()->jumlah ?? 0;
+        $totalTunggakan = $db->table('pembayaran')->whereIn('status', ['Pending', 'Ditolak'])->selectSum('jumlah')->get()->getRow()->jumlah ?? 0;
+        $validasiTertunda = $db->table('pembayaran')->where('status', 'Pending')->where('bukti_bayar !=', null)->where('bukti_bayar !=', '')->countAllResults();
+        $totalDitagihkan = $db->table('pembayaran')->selectSum('jumlah')->get()->getRow()->jumlah ?? 0;
+
+        // 2. Ambil Overview Per Santri (Agregasi)
+        // Kita butuh NIS, Nama, dan ringkasan status tagihannya
+        $santriOverview = $db->table('santri')
+            ->select('santri.id, santri.nis, santri.nama_santri, 
+                     COUNT(p.id) as total_bill, 
+                     SUM(CASE WHEN p.status = "Lunas" THEN 1 ELSE 0 END) as paid_bill,
+                     SUM(CASE WHEN p.status != "Lunas" THEN 1 ELSE 0 END) as unpaid_bill')
+            ->join('pembayaran p', 'p.id_santri = santri.id', 'left')
+            ->groupBy('santri.id')
+            ->orderBy('santri.nama_santri', 'ASC')
+            ->get()->getResultArray();
+
+        // 3. Masih butuh data mentah riwayat (untuk modal/detail dikemudian hari)
         $riwayatPembayaran = $this->pembayaranModel->getSemuaPembayaran();
-        // Ambil daftar santri untuk drop-down tambah tagihan
-        $santri = $this->santriModel->orderBy('nama_santri', 'ASC')->findAll();
+        $santriList = $this->santriModel->orderBy('nama_santri', 'ASC')->findAll();
 
         $data = [
-            'judul' => 'Keuangan & SPP',
-            'riwayat' => $riwayatPembayaran,
-            'santriList' => $santri
+            'judul'             => 'Keuangan Santri',
+            'nama_admin'        => session()->get('nama_lengkap') ?? 'Admin PTQ',
+            'stats'             => [
+                'masuk'     => $totalMasuk,
+                'tunggakan' => $totalTunggakan,
+                'pending'   => $validasiTertunda,
+                'total'     => $totalDitagihkan
+            ],
+            'santriOverview'    => $santriOverview,
+            'riwayat'           => $riwayatPembayaran,
+            'santriList'        => $santriList
         ];
+        
         return view('admin/pembayaran', $data);
     }
 
@@ -550,18 +684,76 @@ class Admin extends BaseController
         return redirect()->to('/admin/pembayaran')->with('success', 'Status/Data pembayaran berhasil diperbarui.');
     }
 
+    public function pembayaranDetail($id)
+    {
+        $db = \Config\Database::connect();
+        
+        // 1. Fetch Student Details (Joined with Kelas and Ortu info)
+        $santri = $db->table('santri')
+            ->select('santri.*, kelas.nama_kelas, orang_tua.nama_ayah, orang_tua.nama_ibu, orang_tua.no_telepon_ayah, orang_tua.no_telepon_ibu')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->join('orang_tua', 'orang_tua.id_user = santri.id_ortu', 'left')
+            ->where('santri.id', $id)
+            ->get()->getRowArray();
+
+        if (!$santri) {
+            return redirect()->to('/admin/pembayaran')->with('error', 'Data santri tidak ditemukan.');
+        }
+
+        // 2. Fetch Billing History
+        $history = $db->table('pembayaran')
+            ->where('id_santri', $id)
+            ->orderBy('created_at', 'DESC')
+            ->get()->getResultArray();
+
+        // 3. Calculate Arrears Summary
+        $unpaid_sum = 0;
+        $unpaid_count = 0;
+        foreach ($history as $h) {
+            if ($h['status'] != 'Lunas') {
+                $unpaid_sum += $h['jumlah'];
+                $unpaid_count++;
+            }
+        }
+
+        $data = [
+            'judul'          => 'Detail Kelola Pembayaran',
+            'santri'         => $santri,
+            'history'        => $history,
+            'unpaid_sum'     => $unpaid_sum,
+            'unpaid_count'   => $unpaid_count,
+            'nama_admin'     => session()->get('nama_lengkap') ?? 'Admin PTQ'
+        ];
+
+        return view('admin/pembayaran_detail', $data);
+    }
+
     public function deletePembayaran($id)
     {
+        $pembayaran = $this->pembayaranModel->find($id);
+        if (!$pembayaran) return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        
         $this->pembayaranModel->delete($id);
+        
+        $returnTo = $this->request->getGet('return_to');
+        if ($returnTo) return redirect()->to($returnTo)->with('success', 'Tagihan berhasil dihapus.');
+        
         return redirect()->to('/admin/pembayaran')->with('success', 'Data pembayaran berhasil dihapus dari sistem.');
     }
 
     public function verifikasiPembayaran($id)
     {
+        $pembayaran = $this->pembayaranModel->find($id);
+        if (!$pembayaran) return redirect()->back()->with('error', 'Data tidak ditemukan.');
+
         $this->pembayaranModel->update($id, [
             'status' => 'Lunas',
             'tanggal_bayar' => date('Y-m-d')
         ]);
+
+        $returnTo = $this->request->getGet('return_to');
+        if ($returnTo) return redirect()->to($returnTo)->with('success', 'Pembayaran berhasil diverifikasi.');
+
         return redirect()->to('/admin/pembayaran')->with('success', 'Pembayaran berhasil diverifikasi.');
     }
 

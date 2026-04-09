@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelas Saya - PTQ Al-Hikmah</title>
+    <title>Santri Binaan - PTQ Al-Hikmah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* VARIABLES & RESET - Consistent with Hafalan Page */
+        /* VARIABLES & RESET - Consistent with All Pages */
         :root {
             --primary: #1a5fb4; --primary-dark: #1c3d78; --secondary: #26a269;
             --accent: #e5a50a; --light: #f8f9fa; --gray: #718096;
@@ -69,36 +69,165 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .page-subtitle { color: var(--gray); font-size: 0.9rem; margin-bottom: 25px; }
         
-        /* PAGE SPECIFIC STYLES */
+        /* SECTION CARD */
         .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); background: #fff; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
-        .table-responsive { overflow-x: auto; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th { text-align: left; padding: 12px 24px; background: var(--light); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); font-weight: 700; border-bottom: 1px solid var(--light-gray); }
-        .table td { padding: 14px 24px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
-        .table tr:last-child td { border-bottom: none; }
-        .table tr:hover { background: #f8fafc; }
+        /* STUDENT GRID */
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 22px;
+        }
         
-        .santri-name { font-weight: 700; color: var(--primary-dark); font-size: .95rem; margin-bottom: 2px; }
-        .santri-nis { font-size: .7rem; color: var(--gray); display: inline-block; background: var(--light); padding: 2px 8px; border-radius: 12px; }
-        .kelas-badge { background: rgba(26, 95, 180, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 12px; }
-        .info-text { font-size: .8rem; color: var(--gray); display: flex; align-items: center; gap: 5px; }
-        .info-text i { font-size: 0.7rem; color: var(--info); }
+        .student-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+        }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .card-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            color: white;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .student-avatar-lg {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        .student-name-lg {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .student-nis-lg {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-family: monospace;
+        }
+        
+        .card-details {
+            padding: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .detail-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-val {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .btn-card-action {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-card-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
         .empty-state i { font-size: 4rem; color: var(--light-gray); margin-bottom: 20px; }
         .empty-state h3 { font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; font-weight: 600; }
-        .empty-state p { font-size: 0.95rem; }
+        .empty-state p { font-size: 0.9rem; color: var(--gray); }
         
-        /* ALERT STYLES */
+        /* ALERT */
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
         .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
-        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
         
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
         
@@ -110,18 +239,16 @@
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); }
             .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
+            .student-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
         }
         
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
-            .card-header { padding: 15px 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
-            .table thead { display: none; }
-            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
-            .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
-            .table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
-            .table td:last-child { border-bottom: none; }
-            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; width: 35%; }
+            .student-grid { grid-template-columns: 1fr; }
+            .card-banner { padding: 20px; }
+            .student-avatar-lg { width: 65px; height: 65px; font-size: 1.5rem; }
+            .student-name-lg { font-size: 1rem; }
         }
     </style>
 </head>
@@ -198,108 +325,70 @@
                 
                 <div style="padding: 15px 15px 5px; color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Manajemen Hafalan</div>
                 <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
-                <div class="menu-item"><a href="#"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
-                <div class="menu-item"><a href="#"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/murojaah') ?>"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
             </div>
         </div>
 
-        <!-- CONTENT - KELAS SAYA -->
+        <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
-            <h1 class="page-title"><i class="fas fa-chalkboard"></i> Kelas Saya</h1>
-            
+            <h1 class="page-title"><i class="fas fa-users"></i> Santri Binaan</h1>
+            <p class="page-subtitle">Daftar santri yang berada di bawah bimbingan dan pengawasan Anda.</p>
+
             <!-- Alert Messages -->
             <?php if (session()->getFlashdata('success')): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?>
-                </div>
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
             <?php endif; ?>
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if(!empty($kelas)): ?>
-                <?php foreach($kelas as $k): ?>
-                <div class="section-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                                <i class="fas fa-school"></i>
+
+            <!-- STUDENT GRID -->
+            <?php if(!empty($santri)): ?>
+                <div class="student-grid">
+                    <?php foreach($santri as $s): ?>
+                    <div class="student-card">
+                        <div class="card-banner">
+                            <span class="status-badge"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 4px;"></i> AKTIF</span>
+                            <div class="student-avatar-lg">
+                                <i class="fas fa-user-graduate"></i>
                             </div>
-                            <?= htmlspecialchars($k['nama_kelas']) ?>
-                            <span class="kelas-badge">
-                                <i class="fas fa-users"></i> <?= $k['jumlah_santri'] ?? 0 ?> Santri
-                            </span>
+                            <div class="student-name-lg"><?= htmlspecialchars($s['nama_santri']) ?></div>
+                            <div class="student-nis-lg">NIS: <?= htmlspecialchars($s['nis'] ?? '-') ?></div>
                         </div>
-                        <?php if(!empty($k['nama_wali_kelas'])): ?>
-                        <div class="info-text">
-                            <i class="fas fa-chalkboard-user"></i> Wali Kelas: <?= htmlspecialchars($k['nama_wali_kelas']) ?>
+                        <div class="card-details">
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fas fa-school"></i></div>
+                                <div class="detail-info">
+                                    <span class="detail-label">Kelas</span>
+                                    <span class="detail-val"><?= htmlspecialchars($s['nama_kelas'] ?? 'Belum ada kelas') ?></span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fas fa-venus-mars"></i></div>
+                                <div class="detail-info">
+                                    <span class="detail-label">Jenis Kelamin</span>
+                                    <span class="detail-val"><?= htmlspecialchars($s['jenis_kelamin'] ?? '-') ?></span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fas fa-phone-alt"></i></div>
+                                <div class="detail-info">
+                                    <span class="detail-label">No. Telepon</span>
+                                    <span class="detail-val"><?= htmlspecialchars($s['no_telepon'] ?? '-') ?></span>
+                                </div>
+                            </div>
+                            <a href="<?= base_url('ustadz/santri/detail/' . $s['id']) ?>" class="btn-card-action">
+                                <i class="fas fa-search"></i> Lihat Detail Santri
+                            </a>
                         </div>
-                        <?php endif; ?>
                     </div>
-                    
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nama Santri</th>
-                                    <th>NIS</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Angkatan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if(!empty($k['santri_list'])): ?>
-                                    <?php foreach($k['santri_list'] as $s): ?>
-                                    <tr>
-                                        <td data-label="Nama Santri">
-                                            <div class="santri-name">
-                                                <i class="fas fa-user-graduate" style="color: var(--primary); margin-right: 8px; font-size: 0.8rem;"></i>
-                                                <?= htmlspecialchars($s['nama_santri']) ?>
-                                            </div>
-                                        </td>
-                                        <td data-label="NIS">
-                                            <span class="santri-nis">
-                                                <i class="fas fa-id-card"></i> <?= htmlspecialchars($s['nis'] ?? '-') ?>
-                                            </span>
-                                        </td>
-                                        <td data-label="Jenis Kelamin">
-                                            <?php 
-                                                $jk = $s['jenis_kelamin'] ?? '-';
-                                                $icon = ($jk == 'Laki-laki') ? 'fa-mars' : (($jk == 'Perempuan') ? 'fa-venus' : 'fa-genderless');
-                                            ?>
-                                            <i class="fas <?= $icon ?>" style="margin-right: 4px; color: var(--gray);"></i>
-                                            <?= htmlspecialchars($jk) ?>
-                                        </td>
-                                        <td data-label="Angkatan">
-                                            <i class="fas fa-calendar-alt" style="margin-right: 4px; color: var(--gray); font-size: 0.7rem;"></i>
-                                            <?= htmlspecialchars($s['angkatan'] ?? '-') ?>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="4" style="text-align:center;padding:40px;color:var(--gray);">
-                                            <i class="fas fa-user-slash" style="font-size:2.5rem;margin-bottom:10px;color:var(--light-gray);"></i>
-                                            <p>Belum ada santri yang terdaftar di kelas ini.</p>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
             <?php else: ?>
-                <div class="section-card">
-                    <div class="empty-state">
-                        <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <i class="fas fa-chalkboard" style="font-size: 3rem; color: var(--light-gray);"></i>
-                        </div>
-                        <h3>Belum Ada Kelas</h3>
-                        <p>Anda belum memiliki kelas yang diampu.<br>Silakan hubungi administrator untuk menambahkan kelas.</p>
+                <div class="empty-state">
+                    <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-user-slash" style="font-size: 3rem; color: var(--light-gray);"></i>
                     </div>
+                    <h3>Belum Ada Santri Binaan</h3>
+                    <p>Anda belum memiliki santri yang dibimbing secara langsung atau melalui kelas.<br>Silakan hubungi administrator untuk menambahkan kelas binaan.</p>
                 </div>
             <?php endif; ?>
         </div>
@@ -355,6 +444,15 @@
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 400);
             }, 5000);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     </script>
 </body>

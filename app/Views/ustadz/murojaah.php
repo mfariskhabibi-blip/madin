@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catat Hafalan Santri - PTQ Al-Hikmah</title>
+    <title>Muroja'ah Santri - PTQ Al-Hikmah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET (From Uniform Dashboard) */
@@ -76,7 +76,7 @@
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: .85rem; cursor: pointer; transition: .2s; border: none; outline: none; }
-        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary { background: var(--secondary); color: #fff; }
         .btn-primary:hover { background: var(--primary-dark); }
         .btn-outline { background: transparent; border: 1px solid var(--light-gray); color: var(--dark); }
         .btn-outline:hover { background: var(--light); }
@@ -96,13 +96,6 @@
         .badge-lancar { background: rgba(38,162,105,.1); color: var(--success); }
         .badge-sedang { background: rgba(221,107,32,.1); color: var(--warning); }
         .badge-mengulang { background: rgba(229,62,62,.1); color: var(--danger); }
-
-        .action-cell { display: flex; gap: 6px; }
-        .act-btn { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; font-size: .85rem; cursor: pointer; transition: .2s; color: #fff; }
-        .act-edit { background: var(--info); }
-        .act-edit:hover { background: #0284c7; }
-        .act-delete { background: var(--danger); }
-        .act-delete:hover { background: #c53030; }
 
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
@@ -130,16 +123,6 @@
 
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
         
-        /* MODAL RESPONSIVE */
-        @media (max-width: 576px) {
-            .modal-card { max-width: 95%; margin: 10px; }
-            .modal-head { padding: 15px; }
-            .modal-body { padding: 15px; }
-            .modal-foot { padding: 12px 15px; flex-direction: column; }
-            .modal-foot .btn { width: 100%; justify-content: center; }
-            .form-row { flex-direction: column; gap: 0; }
-        }
-        
         @media (max-width: 992px) {
             .mobile-menu-toggle { display: flex; }
             .dashboard-container { position: relative; }
@@ -149,7 +132,6 @@
             .user-name, .user-role { display: none; }
         }
         
-        /* CARDS FOR MOBILE */
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
@@ -158,8 +140,7 @@
             .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
             .table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
             .table td:last-child { border-bottom: none; }
-            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; margin-top:2px; }
-            .action-cell { justify-content: flex-end; }
+            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; }
         }
     </style>
 </head>
@@ -235,15 +216,15 @@
                 <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-user-check"></i><span>Absensi Santri</span></a></div>
                 
                 <div style="padding: 15px 15px 5px; color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Manajemen Hafalan</div>
-                <div class="menu-item active"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/murojaah') ?>"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
+                <div class="menu-item active"><a href="<?= base_url('ustadz/murojaah') ?>"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
             </div>
         </div>
 
         <!-- CONTENT -->
         <div class="dashboard-content" id="mainContent">
-            <h1 class="page-title"><i class="fas fa-quran"></i> Catat Hafalan Santri</h1>
+            <h1 class="page-title"><i class="fas fa-sync-alt"></i> Muroja'ah Santri</h1>
 
         <!-- ALERTS -->
         <?php if (session()->getFlashdata('success')): ?>
@@ -252,27 +233,17 @@
         <?php if (session()->getFlashdata('error')): ?>
             <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
         <?php endif; ?>
-        <?php if (session()->getFlashdata('errors')): ?>
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <div style="display:flex;flex-direction:column;">
-                    <?php foreach(session()->getFlashdata('errors') as $err): ?>
-                        <span><?= $err ?></span>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endif; ?>
 
         <div class="section-card">
             <div class="card-header">
                 <div class="card-title">
-                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-list"></i>
+                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(38,162,105,.1);color:var(--secondary);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-history"></i>
                     </div>
-                    Riwayat Hafalan Santri
+                    Riwayat Muroja'ah Santri
                 </div>
                 <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('active')">
-                    <i class="fas fa-plus"></i> Tambah Setoran
+                    <i class="fas fa-plus"></i> Tambah Muroja'ah
                 </button>
             </div>
             
@@ -281,10 +252,9 @@
                     <thead>
                         <tr>
                             <th>Tanggal & Santri</th>
-                            <th>Materi / Surah</th>
-                            <th>Predikat / Kinerja</th>
+                            <th>Materi Muroja'ah</th>
+                            <th>Status Kelancaran</th>
                             <th>Keterangan</th>
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -314,23 +284,13 @@
                                     <td data-label="Keterangan">
                                         <span style="font-size: .85rem; color:var(--gray);"><?= htmlspecialchars($r['keterangan'] ?? '-') ?></span>
                                     </td>
-                                    <td data-label="Aksi">
-                                        <div class="action-cell">
-                                            <button class="act-btn act-edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($r)) ?>)" title="Edit">
-                                                <i class="fas fa-pen"></i>
-                                            </button>
-                                            <a href="<?= base_url('ustadz/hafalan/delete/' . $r['id']) ?>" class="act-btn act-delete" onclick="return confirm('Hapus riwayat setoran ini?')" title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5" style="text-align:center;padding:40px;color:var(--gray);">
-                                    <i class="fas fa-book-open" style="font-size:3rem;margin-bottom:15px;color:var(--light-gray);"></i>
-                                    <p>Belum ada catatan setoran baru dari Santri.</p>
+                                <td colspan="4" style="text-align:center;padding:40px;color:var(--gray);">
+                                    <i class="fas fa-sync-alt" style="font-size:3rem;margin-bottom:15px;color:var(--light-gray);"></i>
+                                    <p>Belum ada catatan muroja'ah dari Santri.</p>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -341,12 +301,12 @@
     </div> <!-- /CONTENT -->
     </div>
 
-    <!-- MODAL TAMBAH HAFALAN -->
+    <!-- MODAL TAMBAH MUROJAAH -->
     <div class="modal-overlay" id="addModal">
-        <form action="<?= base_url('ustadz/hafalan/store') ?>" method="post" class="modal-card">
+        <form action="<?= base_url('ustadz/murojaah/store') ?>" method="post" class="modal-card">
             <?= csrf_field() ?>
             <div class="modal-head">
-                <h3><i class="fas fa-plus-circle"></i> Tambah Hafalan</h3>
+                <h3><i class="fas fa-plus-circle"></i> Input Muroja'ah Baru</h3>
                 <button type="button" class="btn-close" onclick="document.getElementById('addModal').classList.remove('active')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -378,7 +338,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status *</label>
+                    <label class="form-label">Kelancaran *</label>
                     <select name="status" class="form-control" required>
                         <option value="Lancar">Lancar</option>
                         <option value="Sedang">Sedang</option>
@@ -387,63 +347,12 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" class="form-control" rows="2" placeholder="Catatan..."></textarea>
+                    <textarea name="keterangan" class="form-control" rows="2" placeholder="Catatan muroja'ah..."></textarea>
                 </div>
             </div>
             <div class="modal-foot">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('addModal').classList.remove('active')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- MODAL EDIT HAFALAN -->
-    <div class="modal-overlay" id="editModal">
-        <form id="editForm" method="post" class="modal-card">
-            <?= csrf_field() ?>
-            <div class="modal-head">
-                <h3><i class="fas fa-edit"></i> Edit Hafalan</h3>
-                <button type="button" class="btn-close" onclick="document.getElementById('editModal').classList.remove('active')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group" style="padding:12px; background:var(--light); border-radius:6px; margin-bottom:18px;">
-                    <div style="font-size:.8rem; color:var(--gray);">Santri</div>
-                    <div id="edit_nama_santri" style="font-weight:bold; color:var(--primary-dark);"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tanggal</label>
-                    <input type="date" name="tanggal" id="edit_tanggal" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Surah *</label>
-                    <input type="text" name="surah" id="edit_surah" class="form-control" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Ayat Awal *</label>
-                        <input type="number" name="ayat_awal" id="edit_awal" class="form-control" required min="1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Ayat Akhir *</label>
-                        <input type="number" name="ayat_akhir" id="edit_akhir" class="form-control" required min="1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status *</label>
-                    <select name="status" id="edit_status" class="form-control" required>
-                        <option value="Lancar">Lancar</option>
-                        <option value="Sedang">Sedang</option>
-                        <option value="Mengulang">Mengulang</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" id="edit_ket" class="form-control" rows="2"></textarea>
-                </div>
-            </div>
-            <div class="modal-foot">
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('editModal').classList.remove('active')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Record</button>
             </div>
         </form>
     </div>
@@ -481,26 +390,7 @@
         }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-            window.location.href = this.getAttribute('href');
-        }
-    });
-
     document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
-
-    function openEditModal(d) {
-        document.getElementById('edit_tanggal').value = d.tanggal || '';
-        document.getElementById('edit_nama_santri').innerText = d.nama_santri || '';
-        document.getElementById('edit_surah').value = d.surah || '';
-        document.getElementById('edit_awal').value = d.ayat_awal || '';
-        document.getElementById('edit_akhir').value = d.ayat_akhir || '';
-        document.getElementById('edit_status').value = d.status || 'Lancar';
-        document.getElementById('edit_ket').value = d.keterangan || '';
-        document.getElementById('editForm').action = '<?= base_url("ustadz/hafalan/update/") ?>' + d.id;
-        document.getElementById('editModal').classList.add('active');
-    }
 </script>
 </body>
 </html>

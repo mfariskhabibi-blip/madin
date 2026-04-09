@@ -34,18 +34,21 @@ $routes->group('admin', ['filter' => ['auth', 'role:admin']], static function ($
     $routes->post('users/update/(:num)', 'Admin::updateUser/$1');
     $routes->get('users/delete/(:num)', 'Admin::deleteUser/$1');
     $routes->get('users/toggle/(:num)', 'Admin::toggleStatus/$1');
+    $routes->get('users/detail/(:num)', 'Admin::userDetail/$1');
 
     // Data Santri
     $routes->get('santri', 'Admin::santri');
     $routes->post('santri/store', 'Admin::storeSantri');
     $routes->post('santri/update/(:num)', 'Admin::updateSantri/$1');
     $routes->get('santri/delete/(:num)', 'Admin::deleteSantri/$1');
+    $routes->get('santri/detail/(:num)', 'Admin::santriDetail/$1');
 
     // Data Ustadz
     $routes->get('ustadz', 'Admin::ustadz');
     $routes->post('ustadz/store', 'Admin::storeUstadz');
     $routes->post('ustadz/update/(:num)', 'Admin::updateUstadz/$1');
     $routes->get('ustadz/delete/(:num)', 'Admin::deleteUstadz/$1');
+    $routes->get('ustadz/detail/(:num)', 'Admin::ustadzDetail/$1');
     // Data Kelas
     $routes->get('kelas', 'Admin::kelas');
     $routes->post('kelas/store', 'Admin::storeKelas');
@@ -54,10 +57,11 @@ $routes->group('admin', ['filter' => ['auth', 'role:admin']], static function ($
 
     $routes->get('hafalan', 'Admin::hafalan');
     $routes->get('pembayaran', 'Admin::pembayaran');
+    $routes->get('pembayaran/detail/(:num)', 'Admin::pembayaranDetail/$1');
     $routes->post('pembayaran/store', 'Admin::storePembayaran');
     $routes->post('pembayaran/update/(:num)', 'Admin::updatePembayaran/$1');
-    $routes->get('pembayaran/verifikasi/(:num)', 'Admin::verifikasiPembayaran/$1');
     $routes->get('pembayaran/delete/(:num)', 'Admin::deletePembayaran/$1');
+    $routes->get('pembayaran/verifikasi/(:num)', 'Admin::verifikasiPembayaran/$1');
     $routes->get('pengumuman', 'Admin::pengumuman');
     $routes->post('pengumuman/store', 'Admin::storePengumuman');
     $routes->post('pengumuman/update/(:num)', 'Admin::updatePengumuman/$1');
@@ -81,7 +85,11 @@ $routes->group('ustadz', ['filter' => ['auth', 'role:ustadz']], static function 
     $routes->get('absensi', 'Ustadz::absensi');
     $routes->post('absensi/store', 'Ustadz::storeAbsensi');
     
-    // Hafalan
+    $routes->get('santri', 'Ustadz::santri');
+    $routes->get('santri/detail/(:num)', 'Ustadz::santriDetail/$1');
+    $routes->get('murojaah', 'Ustadz::murojaah');
+    $routes->post('murojaah/store', 'Ustadz::storeMurojaah');
+    $routes->get('progres-kelas', 'Ustadz::progresKelas');
     $routes->get('hafalan', 'Ustadz::hafalan');
     $routes->post('hafalan/store', 'Ustadz::storeHafalan');
     $routes->post('hafalan/update/(:num)', 'Ustadz::updateHafalan/$1');

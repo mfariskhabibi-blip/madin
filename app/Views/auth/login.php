@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($judul ?? 'Login - PTQ Al-Hikmah') ?></title>
-    <meta name="description" content="Sistem Login LMS Pesantren Tahfidz Quran Al-Hikmah">
+    <title><?= htmlspecialchars($judul ?? 'Login - PTQ Pencongan') ?></title>
+    <meta name="description" content="Sistem Login LMS Pesantren Tahfidz Quran Pencongan">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -402,7 +402,7 @@
                 <div class="logo-icon">
                     <i class="fas fa-quran"></i>
                 </div>
-                <h1 class="login-title">PTQ <span>Al-Hikmah</span></h1>
+                <h1 class="login-title">PTQ <span>Pencongan</span></h1>
                 <p class="login-subtitle">Masuk ke Learning Management System</p>
             </div>
 

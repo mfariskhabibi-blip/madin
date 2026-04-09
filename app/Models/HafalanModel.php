@@ -19,6 +19,8 @@ class HafalanModel extends Model
         'ayat_awal', 
         'ayat_akhir', 
         'status', 
+        'nilai',
+        'kategori',
         'id_ustadz', 
         'keterangan'
     ];

@@ -108,6 +108,8 @@
         .act-btn { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; font-size: .85rem; cursor: pointer; transition: .2s; outline: none; color: #fff; }
         .act-edit { background: var(--primary); }
         .act-edit:hover { background: var(--primary-dark); }
+        .act-detail { background: var(--secondary); }
+        .act-detail:hover { background: #1e8555; }
         .act-delete { background: var(--danger); }
         .act-delete:hover { background: #c53030; }
 
@@ -326,6 +328,9 @@
                                     </td>
                                     <td data-label="Aksi">
                                         <div class="action-cell">
+                                            <a href="<?= base_url('admin/santri/detail/' . $s['id']) ?>" class="act-btn act-detail" title="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             <button class="act-btn act-edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($s)) ?>)" title="Edit">
                                                 <i class="fas fa-pen"></i>
                                             </button>

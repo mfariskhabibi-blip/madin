@@ -151,6 +151,8 @@
         .act-toggle-aktif:hover { background: #1e8555; }
         .act-toggle-nonaktif { background: var(--danger); }
         .act-toggle-nonaktif:hover { background: #c53030; }
+        .act-detail { background: var(--secondary); }
+        .act-detail:hover { background: #1e8555; }
         .act-edit { background: var(--primary); }
         .act-edit:hover { background: var(--primary-dark); }
         .act-delete { background: var(--danger); }
@@ -387,6 +389,9 @@
                                         </td>
                                         <td data-label="Aksi">
                                             <div class="action-cell">
+                                                <a href="<?= base_url('admin/users/detail/' . $u['id']) ?>" class="act-btn act-detail" title="Lihat Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                                 <?php if($u['id'] != session()->get('id')): ?>
                                                     <?php if($u['status'] == 'aktif'): ?>
                                                         <a href="<?= base_url('admin/users/toggle/' . $u['id']) ?>" class="act-btn act-toggle-nonaktif" onclick="return confirm('Nonaktifkan akun ini? Pengguna tidak akan bisa login.')" title="Nonaktifkan Akun">

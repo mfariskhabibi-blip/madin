@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelas Saya - PTQ Al-Hikmah</title>
+    <title>Progres Hafalan Kelas - PTQ Al-Hikmah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* VARIABLES & RESET - Consistent with Hafalan Page */
+        /* VARIABLES & RESET - Consistent with All Pages */
         :root {
             --primary: #1a5fb4; --primary-dark: #1c3d78; --secondary: #26a269;
             --accent: #e5a50a; --light: #f8f9fa; --gray: #718096;
@@ -69,36 +69,174 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .page-subtitle { color: var(--gray); font-size: 0.9rem; margin-bottom: 25px; }
         
-        /* PAGE SPECIFIC STYLES */
+        /* SECTION CARD */
         .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); background: #fff; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
-        .table-responsive { overflow-x: auto; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th { text-align: left; padding: 12px 24px; background: var(--light); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); font-weight: 700; border-bottom: 1px solid var(--light-gray); }
-        .table td { padding: 14px 24px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
-        .table tr:last-child td { border-bottom: none; }
-        .table tr:hover { background: #f8fafc; }
+        /* CLASS GRID */
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 22px;
+        }
         
-        .santri-name { font-weight: 700; color: var(--primary-dark); font-size: .95rem; margin-bottom: 2px; }
-        .santri-nis { font-size: .7rem; color: var(--gray); display: inline-block; background: var(--light); padding: 2px 8px; border-radius: 12px; }
-        .kelas-badge { background: rgba(26, 95, 180, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-left: 12px; }
-        .info-text { font-size: .8rem; color: var(--gray); display: flex; align-items: center; gap: 5px; }
-        .info-text i { font-size: 0.7rem; color: var(--info); }
+        .class-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+        }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .class-card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .class-card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .class-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .class-card-body {
+            padding: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-label i {
+            width: 20px;
+            color: var(--primary);
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .top-student {
+            color: var(--secondary);
+            font-weight: 800;
+        }
+        
+        /* PROGRESS BAR */
+        .progress-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .card-footer {
+            padding: 15px 20px;
+            background: var(--light);
+            border-top: 1px solid var(--light-gray);
+            text-align: center;
+        }
+        
+        .btn-detail {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .btn-detail:hover {
+            color: var(--primary-dark);
+            transform: translateX(5px);
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
         .empty-state i { font-size: 4rem; color: var(--light-gray); margin-bottom: 20px; }
         .empty-state h3 { font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; font-weight: 600; }
-        .empty-state p { font-size: 0.95rem; }
+        .empty-state p { font-size: 0.9rem; color: var(--gray); }
         
-        /* ALERT STYLES */
+        /* ALERT */
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
         .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
-        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
         
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
         
@@ -110,18 +248,14 @@
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); }
             .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
+            .class-grid { grid-template-columns: 1fr; }
         }
         
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
-            .card-header { padding: 15px 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
-            .table thead { display: none; }
-            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
-            .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
-            .table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
-            .table td:last-child { border-bottom: none; }
-            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; width: 35%; }
+            .class-card-header h3 { font-size: 1rem; }
+            .class-card-body { padding: 15px; }
         }
     </style>
 </head>
@@ -192,116 +326,101 @@
             </div>
             
             <div class="sidebar-menu">
-                <div class="menu-item"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-th-large"></i><span>Dashboard</span></a></div>
-                <div class="menu-item active"><a href="<?= base_url('ustadz/santri') ?>"><i class="fas fa-graduation-cap"></i><span>Santri Binaan</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-user-check"></i><span>Absensi Santri</span></a></div>
-                
-                <div style="padding: 15px 15px 5px; color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Manajemen Hafalan</div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
-                <div class="menu-item"><a href="#"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
-                <div class="menu-item"><a href="#"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/santri') ?>"><i class="fas fa-user-graduate"></i><span>Santri Binaan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-calendar-check"></i><span>Absensi Santri</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-quran"></i><span>Nilai Hafalan</span></a></div>
+                <div class="menu-item active"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal Mengajar</span></a></div>
             </div>
         </div>
 
-        <!-- CONTENT - KELAS SAYA -->
+        <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
-            <h1 class="page-title"><i class="fas fa-chalkboard"></i> Kelas Saya</h1>
-            
+            <h1 class="page-title"><i class="fas fa-chart-line"></i> Progres Hafalan Kelas</h1>
+            <p class="page-subtitle">Pantau perkembangan hafalan seluruh kelas yang Anda ampu.</p>
+
             <!-- Alert Messages -->
             <?php if (session()->getFlashdata('success')): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?>
-                </div>
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
             <?php endif; ?>
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if(!empty($kelas)): ?>
-                <?php foreach($kelas as $k): ?>
-                <div class="section-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                                <i class="fas fa-school"></i>
+
+            <!-- CLASS GRID -->
+            <?php if(!empty($progres)): ?>
+                <div class="class-grid">
+                    <?php foreach($progres as $p): ?>
+                        <div class="class-card">
+                            <div class="class-card-header">
+                                <h3><?= htmlspecialchars($p['kelas']['nama_kelas']) ?></h3>
+                                <div class="class-icon">
+                                    <i class="fas fa-chalkboard"></i>
+                                </div>
                             </div>
-                            <?= htmlspecialchars($k['nama_kelas']) ?>
-                            <span class="kelas-badge">
-                                <i class="fas fa-users"></i> <?= $k['jumlah_santri'] ?? 0 ?> Santri
-                            </span>
+                            <div class="class-card-body">
+                                <div class="stat-item">
+                                    <div class="stat-label"><i class="fas fa-users"></i> Jumlah Santri</div>
+                                    <div class="stat-value"><?= $p['total_santri'] ?> Santri</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label"><i class="fas fa-star"></i> Rata-rata Nilai</div>
+                                    <div class="stat-value"><?= number_format($p['avg_nilai'], 1) ?></div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label"><i class="fas fa-history"></i> Total Setoran</div>
+                                    <div class="stat-value"><?= $p['total_setoran'] ?> Kali</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label"><i class="fas fa-trophy"></i> Santri Teraktif</div>
+                                    <div class="stat-value top-student"><?= htmlspecialchars($p['top_student']) ?></div>
+                                </div>
+                                
+                                <div class="progress-container">
+                                    <div class="progress-label">
+                                        <span>Progres Kelancaran Hafalan</span>
+                                        <span><?= number_format((float)$p['avg_nilai'] * 10, 1) ?>%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: <?= (float)$p['avg_nilai'] * 10 ?>%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="<?= base_url('ustadz/santri?kelas=' . $p['kelas']['id']) ?>" class="btn-detail">
+                                    Lihat Detail Per Santri <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
-                        <?php if(!empty($k['nama_wali_kelas'])): ?>
-                        <div class="info-text">
-                            <i class="fas fa-chalkboard-user"></i> Wali Kelas: <?= htmlspecialchars($k['nama_wali_kelas']) ?>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nama Santri</th>
-                                    <th>NIS</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Angkatan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if(!empty($k['santri_list'])): ?>
-                                    <?php foreach($k['santri_list'] as $s): ?>
-                                    <tr>
-                                        <td data-label="Nama Santri">
-                                            <div class="santri-name">
-                                                <i class="fas fa-user-graduate" style="color: var(--primary); margin-right: 8px; font-size: 0.8rem;"></i>
-                                                <?= htmlspecialchars($s['nama_santri']) ?>
-                                            </div>
-                                        </td>
-                                        <td data-label="NIS">
-                                            <span class="santri-nis">
-                                                <i class="fas fa-id-card"></i> <?= htmlspecialchars($s['nis'] ?? '-') ?>
-                                            </span>
-                                        </td>
-                                        <td data-label="Jenis Kelamin">
-                                            <?php 
-                                                $jk = $s['jenis_kelamin'] ?? '-';
-                                                $icon = ($jk == 'Laki-laki') ? 'fa-mars' : (($jk == 'Perempuan') ? 'fa-venus' : 'fa-genderless');
-                                            ?>
-                                            <i class="fas <?= $icon ?>" style="margin-right: 4px; color: var(--gray);"></i>
-                                            <?= htmlspecialchars($jk) ?>
-                                        </td>
-                                        <td data-label="Angkatan">
-                                            <i class="fas fa-calendar-alt" style="margin-right: 4px; color: var(--gray); font-size: 0.7rem;"></i>
-                                            <?= htmlspecialchars($s['angkatan'] ?? '-') ?>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="4" style="text-align:center;padding:40px;color:var(--gray);">
-                                            <i class="fas fa-user-slash" style="font-size:2.5rem;margin-bottom:10px;color:var(--light-gray);"></i>
-                                            <p>Belum ada santri yang terdaftar di kelas ini.</p>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
             <?php else: ?>
-                <div class="section-card">
-                    <div class="empty-state">
-                        <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <i class="fas fa-chalkboard" style="font-size: 3rem; color: var(--light-gray);"></i>
-                        </div>
-                        <h3>Belum Ada Kelas</h3>
-                        <p>Anda belum memiliki kelas yang diampu.<br>Silakan hubungi administrator untuk menambahkan kelas.</p>
+                <div class="empty-state">
+                    <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--light-gray);"></i>
                     </div>
+                    <h3>Belum Ada Data Kelas</h3>
+                    <p>Anda belum terdaftar sebagai pengampu di kelas manapun.<br>Silakan hubungi administrator untuk menambahkan kelas binaan.</p>
                 </div>
             <?php endif; ?>
+
+            <!-- INFORMASI DASHBOARD -->
+            <div class="section-card" style="margin-top: 22px;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.1);color:var(--info);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        Informasi Progres Hafalan
+                    </div>
+                </div>
+                <div style="padding: 20px 24px;">
+                    <ul style="margin-left: 20px; font-size: 0.85rem; color: var(--gray);">
+                        <li>• <strong>Rata-rata Nilai</strong> - Nilai rata-rata dari seluruh setoran hafalan di kelas tersebut</li>
+                        <li>• <strong>Total Setoran</strong> - Jumlah total setoran hafalan yang telah dicatat</li>
+                        <li>• <strong>Santri Teraktif</strong> - Santri dengan jumlah setoran terbanyak di kelas</li>
+                        <li>• <strong>Progres Kelancaran</strong> - Persentase kelancaran hafalan berdasarkan rata-rata nilai (skala 1-10)</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -355,6 +474,15 @@
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 400);
             }, 5000);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Pengajar (Ustadz) - PTQ Al-Hikmah</title>
+    <title>Manajemen Ustadz - PTQ Al-Hikmah</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET (From Uniform Dashboard) */
@@ -74,13 +74,19 @@
         
         /* PAGE SPECIFIC STYLES */
         .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
         
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: .85rem; cursor: pointer; transition: .2s; border: none; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-primary:hover { background: var(--primary-dark); }
+        .btn-accent { background: var(--accent); color: #fff; }
+        .btn-accent:hover { filter: brightness(0.9); }
         
+        .filter-bar { padding: 16px 24px; background: var(--light); border-bottom: 1px solid var(--light-gray); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .filter-label { font-size: .85rem; font-weight: 600; color: var(--gray); display: flex; align-items: center; gap: 6px; }
+        .select-filter { padding: 6px 12px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: .85rem; color: var(--dark); outline: none; background: #fff; }
+
         .table-responsive { overflow-x: auto; }
         .table { width: 100%; border-collapse: collapse; }
         .table th { text-align: left; padding: 12px 24px; background: var(--light); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); font-weight: 700; border-bottom: 1px solid var(--light-gray); }
@@ -88,50 +94,37 @@
         .table tr:last-child td { border-bottom: none; }
         .table tr:hover { background: #f8fafc; }
 
-        .u-cell { display: flex; align-items: center; gap: 12px; }
-        .u-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; background: var(--primary-dark); }
-        .u-name { font-weight: 600; color: var(--dark); font-size: .95rem; }
-        .u-nip { font-size: .75rem; color: var(--gray); margin-top:2px; }
+        .user-cell { display: flex; align-items: center; gap: 12px; }
+        .u-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .u-info .u-name { font-size: .875rem; font-weight: 600; color: var(--dark); }
+        .u-info .u-nip { font-size: .75rem; color: var(--gray); margin-top: 2px; }
 
         .badge { padding: 6px 12px; border-radius: 20px; font-size: .75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
         .badge-gender { background: rgba(139,92,246,.1); color: var(--purple); }
         .badge-skill { background: rgba(221,107,32,.1); color: var(--warning); }
+        .badge-warning { background: rgba(229,165,10,0.1); color: var(--accent); }
 
-        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .badge-status-aktif { background: rgba(38,162,105,.1); color: var(--success); }
         .badge-status-aktif .dot { background: var(--success); }
         .badge-status-nonaktif { background: rgba(229,62,62,.1); color: var(--danger); }
         .badge-status-nonaktif .dot { background: var(--danger); }
 
-        .action-cell { display: flex; gap: 6px; }
+        .action-cell { display: flex; gap: 6px; flex-wrap: wrap; }
         .act-btn { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; font-size: .85rem; cursor: pointer; transition: .2s; outline: none; color: #fff; }
-        .act-edit { background: var(--primary); }
-        .act-edit:hover { background: var(--primary-dark); }
         .act-detail { background: var(--secondary); }
         .act-detail:hover { background: #1e8555; }
+        .act-edit { background: var(--primary); }
+        .act-edit:hover { background: var(--primary-dark); }
+        .act-profile { background: var(--accent); }
+        .act-profile:hover { filter: brightness(0.9); }
         .act-delete { background: var(--danger); }
         .act-delete:hover { background: #c53030; }
 
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); }
-        .alert-danger  { background: rgba(229,62,62,.1);  color: #c53030; border: 1px solid rgba(229,62,62,.2); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: #fff; width: 100%; max-width: 600px; max-height: 90vh; overflow-y:auto; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,.2); animation: slideUp .3s ease; }
-        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); }
-        .modal-head h3 { font-size: 1.1rem; color: var(--primary-dark); }
-        .btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray); }
-        .modal-body { padding: 24px; }
-        .form-row { display:flex; gap:15px; }
-        .form-row .form-group { flex:1; }
-        .form-group { margin-bottom: 18px; }
-        .form-label { display: block; font-size: .85rem; font-weight: 600; color: var(--dark); margin-bottom: 8px; }
-        .form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: .9rem; color: var(--dark); outline: none; transition: .2s; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,95,180,.15); }
-        .modal-foot { padding: 16px 24px; background: var(--light); border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; }
+        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
+        .alert-danger  { background: rgba(229,62,62,.1);  color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
 
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
         
@@ -152,11 +145,10 @@
             .table thead { display: none; }
             .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
             .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
-            .table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
+            .table td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
             .table td:last-child { border-bottom: none; }
-            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; margin-top:2px; }
-            .action-cell { justify-content: flex-end; }
-            .form-row { flex-direction:column; gap:0;}
+            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; }
+            .user-cell { justify-content: flex-end; }
         }
     </style>
 </head>
@@ -184,29 +176,14 @@
                     
                     <div class="user-dropdown">
                         <div class="user-info" id="userDropdownToggle">
-                            <div class="user-avatar">
-                                <?php 
-                                    $nama = session()->get('nama_lengkap') ?? 'AD';
-                                    $words = explode(' ', $nama);
-                                    $initials = '';
-                                    foreach($words as $word) {
-                                        $initials .= strtoupper(substr($word, 0, 1));
-                                        if(strlen($initials) >= 2) break;
-                                    }
-                                    echo $initials ?: 'AD';
-                                ?>
-                            </div>
+                            <div class="user-avatar"><?= strtoupper(substr(session()->get('nama_lengkap') ?? 'A', 0, 2)) ?></div>
                             <div class="user-details">
                                 <div class="user-name"><?= htmlspecialchars(session()->get('nama_lengkap') ?? 'Administrator') ?></div>
                                 <div class="user-role">Administrator</div>
                             </div>
                             <i class="fas fa-chevron-down" style="font-size: 0.9rem; color: rgba(255,255,255,0.7);"></i>
                         </div>
-                        
                         <div class="dropdown-menu" id="userDropdown">
-                            <a href="#" class="dropdown-item"><i class="fas fa-user"></i><span>Profil Saya</span></a>
-                            <a href="#" class="dropdown-item"><i class="fas fa-cog"></i><span>Pengaturan</span></a>
-                            <div class="dropdown-divider"></div>
                             <a href="<?= base_url('auth/logout') ?>" class="dropdown-item logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Keluar</span></a>
                         </div>
                     </div>
@@ -215,7 +192,6 @@
         </div>
     </header>
 
-    <!-- DASHBOARD LAYOUT -->
     <div class="dashboard-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
@@ -238,298 +214,190 @@
             </div>
         </div>
 
-    <!-- CONTENT -->
-    <div class="dashboard-content" id="mainContent">
-        <h1 class="page-title"><i class="fas fa-chalkboard-teacher"></i> Data Ustadz (Pengajar)</h1>
+        <div class="dashboard-content">
+            <h1 class="page-title"><i class="fas fa-chalkboard-teacher"></i> Data Ustadz (Pengajar)</h1>
 
-        <!-- ALERTS -->
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('errors')): ?>
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle"></i>
-                <div style="display:flex;flex-direction:column;">
-                    <?php foreach(session()->getFlashdata('errors') as $err): ?>
-                        <span><?= $err ?></span>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endif; ?>
+            <!-- ALERTS -->
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
+            <?php endif; ?>
 
-        <div class="section-card">
-            <div class="card-header">
-                <div class="card-title">
-                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-users"></i>
+            <div class="section-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        Tabel Profil Pengajar
                     </div>
-                    Tabel Profil Pengajar
+                    <a href="<?= base_url('admin/ustadz/create') ?>" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Tambah Profil Ustadz
+                    </a>
                 </div>
-                <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('active')">
-                    <i class="fas fa-plus"></i> Tambah Profil Ustadz
-                </button>
-            </div>
-            
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Profil Pengajar</th>
-                            <th>L/P</th>
-                            <th>Bidang Keahlian</th>
-                            <th>No. Telepon</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if(!empty($ustadz)): ?>
-                            <?php foreach($ustadz as $u): ?>
-                                <tr>
-                                    <td data-label="Profil Pengajar">
-                                        <div class="u-cell">
-                                            <div class="u-icon"><i class="fas <?= $u['jenis_kelamin']=='L'?'fa-user-tie':'fa-user-nurse' ?>"></i></div>
-                                            <div>
-                                                <div class="u-name"><?= htmlspecialchars($u['nama_lengkap']) ?></div>
-                                                <div class="u-nip">NIP: <?= htmlspecialchars($u['nip'] ?? '-') ?></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td data-label="L/P">
-                                        <span class="badge badge-gender">
-                                            <i class="fas <?= $u['jenis_kelamin'] == 'L' ? 'fa-mars' : 'fa-venus' ?>"></i>
-                                            <?= $u['jenis_kelamin'] == 'L' ? 'Pria' : 'Wanita' ?>
-                                        </span>
-                                    </td>
-                                    <td data-label="Bidang Keahlian">
-                                        <span class="badge badge-skill"><i class="fas fa-certificate"></i> <?= htmlspecialchars($u['bidang_keahlian'] ?? '-') ?></span>
-                                    </td>
-                                    <td data-label="No. Telepon">
-                                        <span style="font-size:.85rem;"><?= htmlspecialchars($u['no_telepon'] ?? '-') ?></span>
-                                    </td>
-                                    <td data-label="Status">
-                                        <?php $bClass = ($u['status']=='aktif') ? 'badge-status-aktif' : 'badge-status-nonaktif'; ?>
-                                        <span class="badge <?= $bClass ?>">
-                                            <span class="dot"></span><?= ucfirst($u['status']) ?>
-                                        </span>
-                                    </td>
-                                    <td data-label="Aksi">
-                                        <div class="action-cell">
-                                            <a href="<?= base_url('admin/ustadz/detail/' . $u['id']) ?>" class="act-btn act-detail" title="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <button class="act-btn act-edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($u)) ?>)" title="Edit">
-                                                <i class="fas fa-pen"></i>
-                                            </button>
-                                            <a href="<?= base_url('admin/ustadz/delete/' . $u['id']) ?>" class="act-btn act-delete" onclick="return confirm('Hapus profil Ustadz ini? Data akun users tidak akan dihapus.')" title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" style="text-align:center;padding:30px;color:var(--gray);">Belum ada profil Ustadz yang dilengkapi. Harap buat akun (role ustadz) terlebih dahulu di Manajemen Akun.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div> <!-- /CONTENT -->
-    </div>
-
-    <!-- MODAL TAMBAH USTADZ -->
-    <div class="modal-overlay" id="addModal">
-        <form action="<?= base_url('admin/ustadz/store') ?>" method="post" class="modal-card">
-            <?= csrf_field() ?>
-            <div class="modal-head">
-                <h3>Tambah Profil Ustadz/Pengajar</h3>
-                <button type="button" class="btn-close" onclick="document.getElementById('addModal').classList.remove('active')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Pilih Akun Terhubung *</label>
-                    <select name="id_user" class="form-control" required>
-                        <option value="">-- Pilih Akun User Ustadz --</option>
-                        <?php foreach($userUstadz as $uu): ?>
-                            <option value="<?= $uu['id'] ?>"><?= htmlspecialchars($uu['nama_lengkap']) ?> (@<?= htmlspecialchars($uu['username']) ?>)</option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap & Gelar *</label>
-                        <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: Ustadz Ahmad, S.Ag">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">NIP / ID Pegawai</label>
-                        <input type="text" name="nip" class="form-control" placeholder="Biarkan kosong jika tidak ada">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Jenis Kelamin *</label>
-                        <select name="jenis_kelamin" class="form-control" required>
-                            <option value="L">Laki-Laki (Ustadz)</option>
-                            <option value="P">Perempuan (Ustadzah)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Bidang Keahlian</label>
-                        <input type="text" name="bidang_keahlian" class="form-control" placeholder="Tahsin, Tahfidz, Fiqih, dll">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nomor Telepon</label>
-                        <input type="text" name="no_telepon" class="form-control" placeholder="08...">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Pendidikan Terakhir</label>
-                    <input type="text" name="pendidikan" class="form-control" placeholder="Contoh: S1 Pendidikan Islam">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Alamat / Domisili</label>
-                    <textarea name="alamat" class="form-control" rows="2"></textarea>
-                </div>
-            </div>
-            <div class="modal-foot">
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('addModal').classList.remove('active')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Profil</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- MODAL EDIT USTADZ -->
-    <div class="modal-overlay" id="editModal">
-        <form id="editForm" method="post" class="modal-card">
-            <?= csrf_field() ?>
-            <div class="modal-head">
-                <h3>Edit Profil Ustadz</h3>
-                <button type="button" class="btn-close" onclick="document.getElementById('editModal').classList.remove('active')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap & Gelar *</label>
-                        <input type="text" name="nama_lengkap" id="edit_nama" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">NIP / ID Pegawai</label>
-                        <input type="text" name="nip" id="edit_nip" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Jenis Kelamin *</label>
-                        <select name="jenis_kelamin" id="edit_jk" class="form-control" required>
-                            <option value="L">Laki-Laki (Ustadz)</option>
-                            <option value="P">Perempuan (Ustadzah)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" id="edit_tgl" class="form-control">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Bidang Keahlian</label>
-                        <input type="text" name="bidang_keahlian" id="edit_skill" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nomor Telepon</label>
-                        <input type="text" name="no_telepon" id="edit_telp" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Pendidikan Terakhir</label>
-                    <input type="text" name="pendidikan" id="edit_pendidikan" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status *</label>
-                    <select name="status" id="edit_status" class="form-control" required>
+                
+                <div class="filter-bar">
+                    <div class="filter-label"><i class="fas fa-filter"></i> Filter Status:</div>
+                    <select class="select-filter" id="statusFilter">
+                        <option value="">-- Semua Status --</option>
                         <option value="aktif">Aktif</option>
                         <option value="nonaktif">Nonaktif</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Alamat / Domisili</label>
-                    <textarea name="alamat" id="edit_alamat" class="form-control" rows="2"></textarea>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Profil Pengajar</th>
+                                <th>Bidang Keahlian</th>
+                                <th>No. Telepon</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if(!empty($ustadz)): ?>
+                                <?php foreach($ustadz as $u): ?>
+                                    <tr>
+                                        <td data-label="Username">
+                                            <span style="color:var(--gray);font-size:.85rem;font-weight:500;">@<?= htmlspecialchars($u['username']) ?></span>
+                                        </td>
+                                        <td data-label="Profil Pengajar">
+                                            <div class="user-cell">
+                                                <div class="u-avatar" style="background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);">
+                                                    <?php
+                                                        $nama = $u['nama_lengkap'] ?? $u['username'];
+                                                        $i = ''; $p = explode(' ', $nama);
+                                                        foreach($p as $w) { $i .= strtoupper(substr($w,0,1)); if(strlen($i)>=2) break; }
+                                                        echo $i ?: 'U';
+                                                    ?>
+                                                </div>
+                                                <div class="u-info">
+                                                    <div class="u-name"><?= htmlspecialchars($u['nama_lengkap'] ?? 'Profil Belum Lengkap') ?></div>
+                                                    <div class="u-nip"><?= $u['nip'] ? 'NIP: ' . htmlspecialchars($u['nip']) : '<span style="color:var(--warning); font-style:italic;">Data belum diisi</span>' ?></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Bidang Keahlian">
+                                            <?php if($u['profile_id']): ?>
+                                                <span class="badge badge-skill"><i class="fas fa-certificate"></i> <?= htmlspecialchars($u['bidang_keahlian'] ?? '-') ?></span>
+                                            <?php else: ?>
+                                                <span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Menunggu Profil</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td data-label="No. Telepon">
+                                            <span style="font-size:.85rem;"><?= htmlspecialchars($u['no_telepon'] ?? '-') ?></span>
+                                        </td>
+                                        <td data-label="Status">
+                                            <?php 
+                                                $status = $u['status'] ?? 'aktif';
+                                                $bClass = ($status == 'aktif') ? 'badge-status-aktif' : 'badge-status-nonaktif'; 
+                                            ?>
+                                            <span class="badge <?= $bClass ?>">
+                                                <span class="dot"></span><?= ucfirst($status) ?>
+                                            </span>
+                                        </td>
+                                        <td data-label="Aksi">
+                                            <div class="action-cell">
+                                                <?php if($u['profile_id']): ?>
+                                                    <a href="<?= base_url('admin/ustadz/detail/' . $u['profile_id']) ?>" class="act-btn act-detail" title="Lihat Detail">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="<?= base_url('admin/ustadz/edit/' . $u['profile_id']) ?>" class="act-btn act-edit" title="Edit Profil">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a href="<?= base_url('admin/ustadz/delete/' . $u['profile_id']) ?>" class="act-btn act-delete" onclick="return confirm('Hapus profil ini? Akun login tetap ada.')" title="Hapus Profil">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="<?= base_url('admin/ustadz/create?id_user=' . $u['user_id_account']) ?>" class="act-btn act-profile" title="Lengkapi Profil">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:60px;color:var(--gray);">
+                                        <div style="background: rgba(0,0,0,0.02); border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                            <i class="fas fa-user-slash" style="font-size: 3rem; color: var(--light-gray);"></i>
+                                        </div>
+                                        <h3 style="margin-bottom: 8px; color: var(--dark); font-weight: 600;">Belum Ada Data Ustadz</h3>
+                                        <p>Harap pastikan ada akun dengan peran 'Ustadz' di Manajemen Akun.</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-foot">
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('editModal').classList.remove('active')">Batal</button>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Perbarui Profil</button>
+
+            <!-- INFORMASI -->
+            <div class="section-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.1);color:var(--info);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        Informasi Data Ustadz
+                    </div>
+                </div>
+                <div style="padding: 20px 24px;">
+                    <ul style="margin-left: 20px;">
+                        <li>• <strong>Profil Lengkap</strong> - Akun ustadz yang datanya sudah dilengkapi di tabel ini.</li>
+                        <li>• <strong style="color:var(--accent);">Menunggu Profil</strong> - Akun ustadz baru yang perlu dilengkapi biodatanya agar bisa masuk ke jadwal.</li>
+                        <li>• <strong>Username</strong> - Identitas unik untuk login ke aplikasi oleh ustadz tersebut.</li>
+                    </ul>
+                    <p style="margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--light-gray); font-size: 0.85rem; color: var(--gray);">
+                        <i class="fas fa-user-shield"></i> Pengelolaan data ustadz memisahkan antara <strong>Akun Login</strong> dan <strong>Biodata Profil</strong>.
+                    </p>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 
-<script>
-    // Sidebar logic
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-        sidebarOverlay.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-    });
-    
-    sidebarOverlay.addEventListener('click', function() {
-        sidebar.classList.remove('active');
-        sidebarOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    });
-    
-    // User dropdown
-    const userDropdownToggle = document.getElementById('userDropdownToggle');
-    const userDropdown = document.getElementById('userDropdown');
-    
-    userDropdownToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        userDropdown.classList.toggle('active');
-    });
-    
-    document.addEventListener('click', function(e) {
-        if (!userDropdown.contains(e.target) && !userDropdownToggle.contains(e.target)) {
-            userDropdown.classList.remove('active');
-        }
-    });
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        });
+        document.getElementById('sidebarOverlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        });
+        document.getElementById('userDropdownToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('active');
+        });
+        document.addEventListener('click', () => {
+            document.getElementById('userDropdown').classList.remove('active');
+        });
 
-    document.getElementById('logoutBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-            window.location.href = this.getAttribute('href');
-        }
-    });
+        // Filter Status Logic
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const status = this.value;
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const rowStatus = row.querySelector('.badge-status-aktif, .badge-status-nonaktif')?.innerText.toLowerCase();
+                if (!status || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
 
-    document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
-
-    function openEditModal(u) {
-        document.getElementById('edit_nama').value = u.nama_lengkap || '';
-        document.getElementById('edit_nip').value = u.nip || '';
-        document.getElementById('edit_jk').value = u.jenis_kelamin || 'L';
-        document.getElementById('edit_tgl').value = u.tanggal_lahir || '';
-        document.getElementById('edit_skill').value = u.bidang_keahlian || '';
-        document.getElementById('edit_telp').value = u.no_telepon || '';
-        document.getElementById('edit_pendidikan').value = u.pendidikan || '';
-        document.getElementById('edit_status').value = u.status || 'aktif';
-        document.getElementById('edit_alamat').value = u.alamat || '';
-        document.getElementById('editForm').action = '<?= base_url("admin/ustadz/update/") ?>' + u.id;
-        document.getElementById('editModal').classList.add('active');
-    }
-</script>
+        document.querySelectorAll('.alert').forEach(a => setTimeout(() => { 
+            a.style.opacity = '0'; 
+            a.style.transition = 'opacity 0.4s';
+            setTimeout(() => a.remove(), 400); 
+        }, 5000));
+    </script>
 </body>
 </html>

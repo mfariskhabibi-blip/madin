@@ -326,9 +326,9 @@
                         </div>
                         Tabel Pengguna
                     </div>
-                    <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('active')">
+                    <a href="<?= base_url('admin/users/create') ?>" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Tambah Akun Baru
-                    </button>
+                    </a>
                 </div>
                 
                 <div class="filter-bar">
@@ -403,9 +403,9 @@
                                                         </a>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
-                                                <button class="act-btn act-edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($u)) ?>)" title="Edit Akun">
+                                                <a href="<?= base_url('admin/users/edit/' . $u['id']) ?>" class="act-btn act-edit" title="Edit Akun">
                                                     <i class="fas fa-pen"></i>
-                                                </button>
+                                                </a>
                                                 <?php if($u['id'] != session()->get('id')): ?>
                                                     <a href="<?= base_url('admin/users/delete/' . $u['id']) ?>" class="act-btn act-delete" onclick="return confirm('Hapus akun ini secara permanen? Data tidak dapat dikembalikan.')" title="Hapus Akun">
                                                         <i class="fas fa-trash"></i>
@@ -461,94 +461,7 @@
         </div>
     </div>
 
-    <!-- MODAL TAMBAH AKUN -->
-    <div class="modal-overlay" id="addModal">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h3><i class="fas fa-plus-circle"></i> Tambah Akun Baru</h3>
-                <button class="btn-close" onclick="document.getElementById('addModal').classList.remove('active')"><i class="fas fa-times"></i></button>
-            </div>
-            <form action="<?= base_url('admin/users/store') ?>" method="POST">
-                <?= csrf_field() ?>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap *</label>
-                        <input type="text" class="form-control" name="nama_lengkap" placeholder="Masukkan nama lengkap" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Username *</label>
-                        <input type="text" class="form-control" name="username" placeholder="Masukkan username" required>
-                        <div class="form-text">Untuk login, pastikan unik dan mudah diingat.</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" placeholder="Opsional">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password *</label>
-                        <input type="password" class="form-control" name="password" placeholder="Minimal 5 karakter" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Peran (Role) *</label>
-                        <select class="form-control" name="role" required>
-                            <option value="">-- Pilih Peran --</option>
-                            <option value="admin">Admin</option>
-                            <option value="ustadz">Ustadz/Guru</option>
-                            <option value="ortu">Orang Tua</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-foot">
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('addModal').classList.remove('active')">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Akun</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- MODAL EDIT AKUN -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h3><i class="fas fa-edit"></i> Edit Akun</h3>
-                <button class="btn-close" onclick="document.getElementById('editModal').classList.remove('active')"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="editForm" method="POST">
-                <?= csrf_field() ?>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap *</label>
-                        <input type="text" class="form-control" id="edit_nama" name="nama_lengkap" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Username *</label>
-                        <input type="text" class="form-control" id="edit_user" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" id="edit_mail" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password Baru</label>
-                        <input type="password" class="form-control" name="password" placeholder="Kosongkan jika tidak diubah">
-                        <div class="form-text">Isi hanya jika ingin mengganti password.</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Peran (Role) *</label>
-                        <select class="form-control" id="edit_role" name="role" required>
-                            <option value="admin">Admin</option>
-                            <option value="ustadz">Ustadz/Guru</option>
-                            <option value="ortu">Orang Tua</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-foot">
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('editModal').classList.remove('active')">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script>
         // Sidebar logic
@@ -593,28 +506,6 @@
 
         // Auto-hide alert
         document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
-
-        // Edit modal function
-        function openEditModal(usr) {
-            document.getElementById('edit_nama').value = usr.nama_lengkap || '';
-            document.getElementById('edit_user').value = usr.username || '';
-            document.getElementById('edit_mail').value = usr.email || '';
-            document.getElementById('edit_role').value = usr.role || 'ortu';
-            document.getElementById('editForm').action = '<?= base_url("admin/users/update/") ?>' + usr.id;
-            document.getElementById('editModal').classList.add('active');
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const addModal = document.getElementById('addModal');
-            const editModal = document.getElementById('editModal');
-            if (event.target == addModal) {
-                addModal.classList.remove('active');
-            }
-            if (event.target == editModal) {
-                editModal.classList.remove('active');
-            }
-        }
     </script>
 </body>
 </html>

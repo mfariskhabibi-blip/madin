@@ -49,6 +49,7 @@ class Ustadz extends BaseController
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
             ->groupEnd()
             ->get()->getResultArray();
         
@@ -121,6 +122,7 @@ class Ustadz extends BaseController
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
             ->groupEnd()
             ->orderBy('santri.nama_santri', 'ASC')
             ->get()
@@ -150,8 +152,14 @@ class Ustadz extends BaseController
             return redirect()->to('/ustadz/santri')->with('error', 'Santri tidak ditemukan.');
         }
         
-        // Validasi akses: harus ustadz pembimbing langsung atau wali kelas
-        if ($santri['id_ustadz'] != $id_ustadz && $santri['id_ustadz_kelas'] != $id_ustadz) {
+        // Validasi akses: harus ustadz pembimbing langsung, wali kelas, atau pengampu
+        $db = \Config\Database::connect();
+        $isPengampu = $db->table('kelas_ustadz')
+            ->where('id_kelas', $santri['id_kelas'])
+            ->where('id_ustadz', $id_ustadz)
+            ->countAllResults() > 0;
+
+        if ($santri['id_ustadz'] != $id_ustadz && $santri['id_ustadz_kelas'] != $id_ustadz && !$isPengampu) {
             return redirect()->to('/ustadz/santri')->with('error', 'Anda tidak memiliki akses ke data santri ini.');
         }
         
@@ -212,7 +220,10 @@ class Ustadz extends BaseController
         $db = \Config\Database::connect();
         $kelas = $db->table('kelas')
             ->select('kelas.*')
-            ->where('kelas.id_ustadz', $id_ustadz)
+            ->groupStart()
+                ->where('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
+            ->groupEnd()
             ->orderBy('kelas.nama_kelas', 'ASC')
             ->get()
             ->getResultArray();
@@ -247,6 +258,7 @@ class Ustadz extends BaseController
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
             ->groupEnd()
             ->orderBy('santri.nama_santri', 'ASC')
             ->get()
@@ -329,6 +341,7 @@ class Ustadz extends BaseController
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
             ->groupEnd()
             ->orderBy('santri.nama_santri', 'ASC')
             ->get()
@@ -480,6 +493,7 @@ class Ustadz extends BaseController
             ->groupStart()
                 ->where('santri.id_ustadz', $id_ustadz)
                 ->orWhere('kelas.id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
             ->groupEnd()
             ->orderBy('santri.nama_santri', 'ASC')
             ->get()
@@ -541,7 +555,10 @@ class Ustadz extends BaseController
         // Ambil kelas yang diampu ustadz
         $kelas = $db->table('kelas')
             ->select('kelas.*')
-            ->where('id_ustadz', $id_ustadz)
+            ->groupStart()
+                ->where('id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
+            ->groupEnd()
             ->get()
             ->getResultArray();
             

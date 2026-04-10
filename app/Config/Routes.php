@@ -45,13 +45,17 @@ $routes->group('admin', ['filter' => ['auth', 'role:admin']], static function ($
 
     // Data Ustadz
     $routes->get('ustadz', 'Admin::ustadz');
+    $routes->get('ustadz/create', 'Admin::createUstadz');
+    $routes->get('ustadz/edit/(:num)', 'Admin::editUstadz/$1');
     $routes->post('ustadz/store', 'Admin::storeUstadz');
     $routes->post('ustadz/update/(:num)', 'Admin::updateUstadz/$1');
     $routes->get('ustadz/delete/(:num)', 'Admin::deleteUstadz/$1');
     $routes->get('ustadz/detail/(:num)', 'Admin::ustadzDetail/$1');
     // Data Kelas
     $routes->get('kelas', 'Admin::kelas');
+    $routes->get('kelas/create', 'Admin::createKelas');
     $routes->post('kelas/store', 'Admin::storeKelas');
+    $routes->get('kelas/edit/(:num)', 'Admin::editKelas/$1');
     $routes->post('kelas/update/(:num)', 'Admin::updateKelas/$1');
     $routes->get('kelas/delete/(:num)', 'Admin::deleteKelas/$1');
 

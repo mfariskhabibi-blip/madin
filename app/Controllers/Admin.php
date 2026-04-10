@@ -14,7 +14,7 @@ class Admin extends BaseController
     protected $pembayaranModel;
     protected $pengumumanModel;
     protected $jadwalModel;
-    protected $orangTuaModel;
+    protected $kelasUstadzModel;
 
     public function __construct()
     {
@@ -22,6 +22,7 @@ class Admin extends BaseController
         $this->santriModel = new \App\Models\SantriModel();
         $this->kelasModel = new \App\Models\KelasModel();
         $this->ustadzModel = new \App\Models\UstadzModel();
+        $this->kelasUstadzModel = new \App\Models\KelasUstadzModel();
         $this->hafalanModel = new \App\Models\HafalanModel();
         $this->pembayaranModel = new \App\Models\PembayaranModel();
         $this->pengumumanModel = new \App\Models\PengumumanModel();
@@ -85,8 +86,11 @@ class Admin extends BaseController
     // =========================================================
     public function createUser()
     {
-        // Form ditangani via modal di halaman users
-        return redirect()->to('/admin/users');
+        $data = [
+            'judul'      => 'Tambah Akun Baru',
+            'nama_admin' => session()->get('nama_lengkap') ?? 'Admin PTQ',
+        ];
+        return view('admin/user_create', $data);
     }
 
     // =========================================================
@@ -137,6 +141,51 @@ class Admin extends BaseController
             'status'       => 'aktif',
         ]);
 
+        $newUserId = $this->userModel->getInsertID();
+        $role = $this->request->getPost('role');
+
+        // Jika role ortu, simpan juga profil orang tua & data santri
+        if ($role === 'ortu') {
+            // Simpan profil orang tua
+            $this->orangTuaModel->save([
+                'id_user'          => $newUserId,
+                'nama_ayah'        => $this->request->getPost('nama_ayah'),
+                'nama_ibu'         => $this->request->getPost('nama_ibu'),
+                'no_telepon_ayah'  => $this->request->getPost('no_telepon_ayah'),
+                'no_telepon_ibu'   => $this->request->getPost('no_telepon_ibu'),
+                'alamat'           => $this->request->getPost('alamat_ortu'),
+            ]);
+
+            // Simpan data santri (anak)
+            $santriData = $this->request->getPost('santri');
+            if (!empty($santriData) && is_array($santriData)) {
+                foreach ($santriData as $s) {
+                    // Skip jika nama santri kosong
+                    if (empty($s['nama_santri'])) continue;
+
+                    // Auto-generate NIS: tahun + random 4 digit
+                    $tahun = $s['tahun_angkatan'] ?? date('Y');
+                    $nis = $tahun . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                    // Pastikan NIS unik
+                    while ($this->santriModel->where('nis', $nis)->first()) {
+                        $nis = $tahun . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                    }
+
+                    $this->santriModel->save([
+                        'nis'            => $nis,
+                        'nama_santri'    => $s['nama_santri'],
+                        'jenis_kelamin'  => $s['jenis_kelamin'] ?? 'L',
+                        'tanggal_lahir'  => $s['tanggal_lahir'] ?? null,
+                        'alamat'         => $s['alamat'] ?? null,
+                        'id_ortu'        => $newUserId,
+                        'status'         => 'aktif',
+                    ]);
+                }
+            }
+
+            return redirect()->to('/admin/users')->with('success', 'Akun Orang Tua beserta data santri berhasil ditambahkan.');
+        }
+
         return redirect()->to('/admin/users')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
@@ -150,8 +199,23 @@ class Admin extends BaseController
             return redirect()->to('/admin/users')->with('error', 'Pengguna tidak ditemukan.');
         }
 
-        // Data dikirim sebagai JSON untuk modal
-        return $this->response->setJSON($user);
+        $parent = null;
+        $santri = [];
+
+        if ($user['role'] === 'ortu') {
+            $parent = $this->orangTuaModel->where('id_user', $id)->first();
+            if ($parent) {
+                $santri = $this->santriModel->where('id_ortu', $id)->findAll();
+            }
+        }
+
+        $data = [
+            'judul'  => 'Edit Akun - ' . $user['nama_lengkap'],
+            'user'   => $user,
+            'parent' => $parent,
+            'santri' => $santri,
+        ];
+        return view('admin/user_edit', $data);
     }
 
     // =========================================================
@@ -193,6 +257,9 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $db = \Config\Database::connect();
+        $db->transStart();
+
         $updateData = [
             'username'     => $this->request->getPost('username'),
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
@@ -206,12 +273,66 @@ class Admin extends BaseController
             if (strlen($newPassword) < 5) {
                 return redirect()->back()->withInput()->with('errors', ['password' => 'Password minimal 5 karakter.']);
             }
-            $updateData['password'] = $newPassword;
+            $updateData['password'] = password_hash((string)$newPassword, PASSWORD_DEFAULT);
         }
 
         $this->userModel->update($id, $updateData);
 
-        return redirect()->to('/admin/users')->with('success', 'Data pengguna berhasil diperbarui.');
+        // Jika role ORTU, handle data orang tua dan santri
+        if ($updateData['role'] === 'ortu') {
+            $dataOrtu = [
+                'id_user'         => $id,
+                'nama_ayah'       => $this->request->getPost('nama_ayah'),
+                'nama_ibu'        => $this->request->getPost('nama_ibu'),
+                'no_telepon_ayah' => $this->request->getPost('no_telepon_ayah'),
+                'no_telepon_ibu'  => $this->request->getPost('no_telepon_ibu'),
+                'alamat'          => $this->request->getPost('alamat_ortu'),
+            ];
+
+            $existingOrtu = $this->orangTuaModel->where('id_user', $id)->first();
+            if ($existingOrtu) {
+                $this->orangTuaModel->update($existingOrtu['id'], $dataOrtu);
+                $idOrtu = $existingOrtu['id'];
+            } else {
+                $idOrtu = $this->orangTuaModel->insert($dataOrtu);
+            }
+
+            // Handle Santri
+            $santriPOST = $this->request->getPost('santri');
+            if ($santriPOST && is_array($santriPOST)) {
+                foreach ($santriPOST as $sData) {
+                    if (empty($sData['nama_santri'])) continue;
+
+                    $sRecord = [
+                        'id_ortu'       => $idOrtu,
+                        'nama_santri'   => $sData['nama_santri'],
+                        'jenis_kelamin' => $sData['jenis_kelamin'],
+                        'tanggal_lahir' => $sData['tanggal_lahir'],
+                        'tempat_lahir'  => $sData['tempat_lahir'] ?? null,
+                        'tahun_angkatan'=> $sData['tahun_angkatan'] ?? date('Y'),
+                        'alamat'        => $sData['alamat'],
+                        'status'        => 'aktif'
+                    ];
+
+                    if (!empty($sData['id'])) {
+                        $this->santriModel->update($sData['id'], $sRecord);
+                    } else {
+                        $yearPart = $sData['tahun_angkatan'] ?? date('Y');
+                        $randPart = str_pad((string)rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                        $sRecord['nis'] = $yearPart . $randPart;
+                        $this->santriModel->insert($sRecord);
+                    }
+                }
+            }
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat memperbarui data.');
+        }
+
+        return redirect()->to('/admin/users')->with('success', 'Data akun berhasil diperbarui.');
     }
 
     // =========================================================
@@ -406,26 +527,63 @@ class Admin extends BaseController
 
     public function ustadz()
     {
-        $ustadz = $this->ustadzModel->getUstadzWithUser();
-        // Hanya ambil user role ustadz yang berstatus aktif dan blom punya profil kalau perlu, 
-        // tapi untuk mempermudah form master, kita ambil semua role ustadz.
-        $userUstadz = $this->userModel->where('role', 'ustadz')->findAll();
+        // Get all users with role 'ustadz' and left join their profile details
+        $ustadz = $this->userModel->select('users.id as user_id_account, users.username, users.email, users.status as user_status, ustadz.*, ustadz.id as profile_id')
+                    ->where('role', 'ustadz')
+                    ->join('ustadz', 'ustadz.id_user = users.id', 'left')
+                    ->findAll();
         
         $data = [
-            'judul' => 'Data Ustadz/Pengajar',
+            'judul'  => 'Data Ustadz/Pengajar',
             'ustadz' => $ustadz,
-            'userUstadz' => $userUstadz,
         ];
         return view('admin/ustadz', $data);
+    }
+
+    public function createUstadz()
+    {
+        // Get all user accounts with 'ustadz' role that don't have a profile yet
+        $existingUstadzUserIds = $this->ustadzModel->findAll();
+        $existingIds = array_column($existingUstadzUserIds, 'id_user');
+        
+        $userUstadzQuery = $this->userModel->where('role', 'ustadz');
+        if (!empty($existingIds)) {
+            $userUstadzQuery->whereNotIn('id', $existingIds);
+        }
+        $userUstadz = $userUstadzQuery->findAll();
+
+        $data = [
+            'judul'      => 'Tambah Profil Ustadz',
+            'userUstadz' => $userUstadz,
+        ];
+        return view('admin/ustadz_create', $data);
+    }
+
+    public function editUstadz($id)
+    {
+        $ustadz = $this->ustadzModel->find($id);
+        if (!$ustadz) {
+            return redirect()->to('/admin/ustadz')->with('error', 'Profil Ustadz tidak ditemukan.');
+        }
+
+        $user = $this->userModel->find($ustadz['id_user']);
+
+        $data = [
+            'judul'  => 'Edit Profil Ustadz',
+            'ustadz' => $ustadz,
+            'user'   => $user,
+        ];
+        return view('admin/ustadz_edit', $data);
     }
 
     public function storeUstadz()
     {
         $rules = [
-            'id_user' => 'required|is_unique[ustadz.id_user]',
-            'nama_lengkap' => 'required|min_length[3]',
-            'nip' => 'permit_empty|is_unique[ustadz.nip]',
+            'id_user'       => 'required|is_unique[ustadz.id_user]',
+            'nama_lengkap'  => 'required|min_length[3]',
+            'nip'           => 'permit_empty|is_unique[ustadz.nip]',
             'jenis_kelamin' => 'required|in_list[L,P]',
+            'no_telepon'    => 'required',
         ];
 
         if (!$this->validate($rules)) {
@@ -433,19 +591,53 @@ class Admin extends BaseController
         }
 
         $this->ustadzModel->save([
-            'id_user' => $this->request->getPost('id_user'),
-            'nip' => $this->request->getPost('nip') ?: null,
-            'nama_lengkap' => $this->request->getPost('nama_lengkap'),
-            'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
-            'alamat' => $this->request->getPost('alamat'),
-            'no_telepon' => $this->request->getPost('no_telepon'),
-            'pendidikan' => $this->request->getPost('pendidikan'),
+            'id_user'         => $this->request->getPost('id_user'),
+            'nip'             => $this->request->getPost('nip') ?: null,
+            'nama_lengkap'    => $this->request->getPost('nama_lengkap'),
+            'jenis_kelamin'   => $this->request->getPost('jenis_kelamin'),
+            'tanggal_lahir'   => $this->request->getPost('tanggal_lahir') ?: null,
+            'alamat'          => $this->request->getPost('alamat'),
+            'no_telepon'      => $this->request->getPost('no_telepon'),
+            'pendidikan'      => $this->request->getPost('pendidikan'),
             'bidang_keahlian' => $this->request->getPost('bidang_keahlian'),
-            'status' => 'aktif'
+            'status'          => 'aktif'
         ]);
 
         return redirect()->to('/admin/ustadz')->with('success', 'Profil Ustadz berhasil ditambahkan.');
+    }
+
+    public function updateUstadz($id)
+    {
+        $ustadz = $this->ustadzModel->find($id);
+        if (!$ustadz) {
+            return redirect()->to('/admin/ustadz')->with('error', 'Profil Ustadz tidak ditemukan.');
+        }
+
+        $rules = [
+            'nama_lengkap'  => 'required|min_length[3]',
+            'nip'           => "permit_empty|is_unique[ustadz.nip,id,{$id}]",
+            'jenis_kelamin' => 'required|in_list[L,P]',
+            'no_telepon'    => 'required',
+            'status'        => 'required|in_list[aktif,nonaktif]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $this->ustadzModel->update($id, [
+            'nip'             => $this->request->getPost('nip') ?: null,
+            'nama_lengkap'    => $this->request->getPost('nama_lengkap'),
+            'jenis_kelamin'   => $this->request->getPost('jenis_kelamin'),
+            'tanggal_lahir'   => $this->request->getPost('tanggal_lahir') ?: null,
+            'alamat'          => $this->request->getPost('alamat'),
+            'no_telepon'      => $this->request->getPost('no_telepon'),
+            'pendidikan'      => $this->request->getPost('pendidikan'),
+            'bidang_keahlian' => $this->request->getPost('bidang_keahlian'),
+            'status'          => $this->request->getPost('status')
+        ]);
+
+        return redirect()->to('/admin/ustadz')->with('success', 'Profil Ustadz berhasil diperbarui.');
     }
 
     // =========================================================
@@ -480,35 +672,6 @@ class Admin extends BaseController
         return view('admin/ustadz_detail', $data);
     }
 
-    public function updateUstadz($id)
-    {
-        $rules = [
-            'nama_lengkap' => 'required|min_length[3]',
-            'nip' => "permit_empty|is_unique[ustadz.nip,id,{$id}]",
-            'jenis_kelamin' => 'required|in_list[L,P]',
-            'status' => 'required|in_list[aktif,nonaktif]'
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $this->ustadzModel->update($id, [
-            // id_user sengaja dicabut dari update agar tidak bisa ditukar sembarangan jika bukan admin root
-            'nip' => $this->request->getPost('nip') ?: null,
-            'nama_lengkap' => $this->request->getPost('nama_lengkap'),
-            'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
-            'alamat' => $this->request->getPost('alamat'),
-            'no_telepon' => $this->request->getPost('no_telepon'),
-            'pendidikan' => $this->request->getPost('pendidikan'),
-            'bidang_keahlian' => $this->request->getPost('bidang_keahlian'),
-            'status' => $this->request->getPost('status')
-        ]);
-
-        return redirect()->to('/admin/ustadz')->with('success', 'Data profil pengajar berhasil diperbarui.');
-    }
-
     public function deleteUstadz($id)
     {
         $this->ustadzModel->delete($id);
@@ -517,33 +680,85 @@ class Admin extends BaseController
 
     public function kelas()
     {
-        $kelas = $this->kelasModel->getKelasWithUstadz();
-        $ustadzList = $this->userModel->where('role', 'ustadz')->findAll();
+        $kelas = $this->kelasModel->getKelasWithWali();
         
+        // Enhance with multiple teachers list
+        foreach ($kelas as &$k) {
+            $k['pengampu'] = $this->kelasUstadzModel->getUstadzByKelas($k['id']);
+        }
+
         $data = [
             'judul' => 'Data Kelas',
             'kelas' => $kelas,
-            'ustadzList' => $ustadzList,
         ];
         return view('admin/kelas', $data);
+    }
+
+    public function createKelas()
+    {
+        $ustadzList = $this->userModel->where('role', 'ustadz')->findAll();
+        
+        $data = [
+            'judul'      => 'Tambah Kelas Baru',
+            'ustadzList' => $ustadzList,
+        ];
+        return view('admin/kelas_create', $data);
+    }
+
+    public function editKelas($id)
+    {
+        $kelas = $this->kelasModel->find($id);
+        if (!$kelas) {
+            return redirect()->to('/admin/kelas')->with('error', 'Kelas tidak ditemukan.');
+        }
+
+        $ustadzList = $this->userModel->where('role', 'ustadz')->findAll();
+        $currentTeachers = $this->kelasUstadzModel->where('id_kelas', $id)->findAll();
+        $currentTeacherIds = array_column($currentTeachers, 'id_ustadz');
+
+        $data = [
+            'judul'             => 'Edit Data Kelas',
+            'kelas'             => $kelas,
+            'ustadzList'        => $ustadzList,
+            'currentTeacherIds' => $currentTeacherIds
+        ];
+        return view('admin/kelas_edit', $data);
     }
 
     public function storeKelas()
     {
         $rules = [
             'nama_kelas' => 'required|min_length[3]',
-            'id_ustadz' => 'permit_empty|integer'
+            'id_ustadz'  => 'permit_empty|integer',
+            'ustadz_ids' => 'permit_empty'
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $this->kelasModel->save([
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        // 1. Save Main Kelas
+        $id_kelas = $this->kelasModel->insert([
             'nama_kelas' => $this->request->getPost('nama_kelas'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'id_ustadz' => $this->request->getPost('id_ustadz')
+            'deskripsi'  => $this->request->getPost('deskripsi'),
+            'id_ustadz'  => $this->request->getPost('id_ustadz') ?: null
         ]);
+
+        // 2. Save Multiple Teachers
+        $ustadzIds = $this->request->getPost('ustadz_ids');
+        if (!empty($ustadzIds)) {
+            foreach ($ustadzIds as $uid) {
+                $this->kelasUstadzModel->insert([
+                    'id_kelas'  => $id_kelas,
+                    'id_ustadz' => $uid
+                ]);
+            }
+        }
+
+        $db->transComplete();
 
         return redirect()->to('/admin/kelas')->with('success', 'Kelas berhasil ditambahkan.');
     }
@@ -552,18 +767,36 @@ class Admin extends BaseController
     {
         $rules = [
             'nama_kelas' => 'required|min_length[3]',
-            'id_ustadz' => 'permit_empty|integer'
+            'id_ustadz'  => 'permit_empty|integer'
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        // 1. Update Main Kelas
         $this->kelasModel->update($id, [
             'nama_kelas' => $this->request->getPost('nama_kelas'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'id_ustadz' => $this->request->getPost('id_ustadz')
+            'deskripsi'  => $this->request->getPost('deskripsi'),
+            'id_ustadz'  => $this->request->getPost('id_ustadz') ?: null
         ]);
+
+        // 2. Update Multiple Teachers (Sync)
+        $this->kelasUstadzModel->where('id_kelas', $id)->delete();
+        $ustadzIds = $this->request->getPost('ustadz_ids');
+        if (!empty($ustadzIds)) {
+            foreach ($ustadzIds as $uid) {
+                $this->kelasUstadzModel->insert([
+                    'id_kelas'  => $id,
+                    'id_ustadz' => $uid
+                ]);
+            }
+        }
+
+        $db->transComplete();
 
         return redirect()->to('/admin/kelas')->with('success', 'Data kelas berhasil diperbarui.');
     }

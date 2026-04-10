@@ -4,19 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class KelasModel extends Model
+class KelasUstadzModel extends Model
 {
-    protected $table            = 'kelas';
+    protected $table            = 'kelas_ustadz';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [
-        'nama_kelas', 
-        'deskripsi', 
-        'id_ustadz'
-    ];
+    protected $allowedFields    = ['id_kelas', 'id_ustadz'];
 
     // Dates
     protected $useTimestamps = true;
@@ -25,12 +21,13 @@ class KelasModel extends Model
     protected $updatedField  = 'updated_at';
 
     /**
-     * Get all classes with their primary "Wali Kelas" 
+     * Get all ustadz (users) for a specific class
      */
-    public function getKelasWithWali()
+    public function getUstadzByKelas($id_kelas)
     {
-        return $this->select('kelas.*, ustadz.nama_lengkap as nama_wali_kelas')
-                    ->join('users as ustadz', 'ustadz.id = kelas.id_ustadz', 'left')
+        return $this->select('users.id, users.nama_lengkap, users.username')
+                    ->join('users', 'users.id = kelas_ustadz.id_ustadz')
+                    ->where('kelas_ustadz.id_kelas', $id_kelas)
                     ->findAll();
     }
 }

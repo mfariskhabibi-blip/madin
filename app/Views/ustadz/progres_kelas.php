@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progres Hafalan Kelas - PTQ Al-Hikmah</title>
+    <title>Progres Hafalan Kelas - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET - Consistent with All Pages */
@@ -26,7 +26,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -80,8 +80,8 @@
         /* CLASS GRID */
         .class-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
         }
         
         .class-card {
@@ -163,10 +163,27 @@
             font-size: 0.9rem;
         }
         
-        .top-student {
-            color: var(--secondary);
-            font-weight: 800;
+        /* STUDENT TABLE */
+        .student-table-container {
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            margin-top: 15px;
         }
+        .student-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .student-table th { text-align: left; padding: 10px; background: var(--light); color: var(--gray); font-weight: 700; text-transform: uppercase; font-size: 0.65rem; border-bottom: 2px solid var(--light-gray); position: sticky; top: 0; background: #f1f5f9; }
+        .student-table td { padding: 12px 10px; border-bottom: 1px solid var(--light-gray); vertical-align: middle; }
+        .student-table tr:last-child td { border-bottom: none; }
+        
+        .s-name-cell { font-weight: 700; color: var(--dark); }
+        .s-surah-cell { color: var(--primary-dark); font-weight: 600; }
+        .s-ayat-cell { color: var(--gray); font-size: 0.7rem; margin-top: 2px; }
+
+        .badge-mini { padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-lancar { background: #ecfdf5; color: var(--success); border: 1px solid rgba(56,161,105,0.2); }
+        .badge-mengulang { background: #fef2f2; color: var(--danger); border: 1px solid rgba(229,62,62,0.2); }
+        .badge-none { background: #f1f5f9; color: #94a3b8; }
         
         /* PROGRESS BAR */
         .progress-container {
@@ -209,9 +226,8 @@
             color: var(--primary);
             font-weight: 700;
             font-size: 0.85rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
             transition: var(--transition);
         }
@@ -238,7 +254,8 @@
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
         .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
         
-        .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; }
+        .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
+        .sidebar-overlay.active { display: block; opacity: 1; }
         
         /* RESPONSIVE */
         @media (max-width: 992px) {
@@ -256,6 +273,8 @@
             .dashboard-content { padding: 20px 15px; }
             .class-card-header h3 { font-size: 1rem; }
             .class-card-body { padding: 15px; }
+            .student-table th, .student-table td { padding: 8px; }
+            .student-table-container { max-height: 250px; }
         }
     </style>
 </head>
@@ -270,8 +289,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('ustadz/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -318,7 +337,7 @@
     <div class="dashboard-container">
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR - SAMA PERSIS DENGAN HALAMAN ABSENSI -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="welcome-text">Selamat Mengajar,</div>
@@ -326,19 +345,21 @@
             </div>
             
             <div class="sidebar-menu">
-                <div class="menu-item"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/santri') ?>"><i class="fas fa-user-graduate"></i><span>Santri Binaan</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-calendar-check"></i><span>Absensi Santri</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-quran"></i><span>Nilai Hafalan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/dashboard') ?>"><i class="fas fa-th-large"></i><span>Dashboard</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/santri') ?>"><i class="fas fa-graduation-cap"></i><span>Santri Binaan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/absensi') ?>"><i class="fas fa-user-check"></i><span>Absensi Santri</span></a></div>
+                
+                <div style="padding: 15px 15px 5px; color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Manajemen Hafalan</div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/hafalan') ?>"><i class="fas fa-book-open"></i><span>Setoran Hafalan</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ustadz/murojaah') ?>"><i class="fas fa-sync-alt"></i><span>Muroja'ah</span></a></div>
                 <div class="menu-item active"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ustadz/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal Mengajar</span></a></div>
             </div>
         </div>
 
         <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
             <h1 class="page-title"><i class="fas fa-chart-line"></i> Progres Hafalan Kelas</h1>
-            <p class="page-subtitle">Pantau perkembangan hafalan seluruh kelas yang Anda ampu.</p>
+            <p class="page-subtitle">Pantau perkembangan hafalan seluruh kelas yang Anda ampu secara real-time.</p>
 
             <!-- Alert Messages -->
             <?php if (session()->getFlashdata('success')): ?>
@@ -351,9 +372,9 @@
                     <?php foreach($progres as $p): ?>
                         <div class="class-card">
                             <div class="class-card-header">
-                                <h3><?= htmlspecialchars($p['kelas']['nama_kelas']) ?></h3>
+                                <h3><i class="fas fa-chalkboard-user" style="margin-right: 8px;"></i> <?= htmlspecialchars($p['kelas']['nama_kelas']) ?></h3>
                                 <div class="class-icon">
-                                    <i class="fas fa-chalkboard"></i>
+                                    <i class="fas fa-book-quran"></i>
                                 </div>
                             </div>
                             <div class="class-card-body">
@@ -362,25 +383,71 @@
                                     <div class="stat-value"><?= $p['total_santri'] ?> Santri</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label"><i class="fas fa-star"></i> Rata-rata Nilai</div>
-                                    <div class="stat-value"><?= number_format($p['avg_nilai'], 1) ?></div>
+                                    <div class="stat-label"><i class="fas fa-check-double"></i> Persentase Tuntas</div>
+                                    <div class="stat-value" style="color:var(--secondary); font-weight: 800;"><?= $p['percent_tuntas'] ?>%</div>
                                 </div>
                                 <div class="stat-item">
-                                    <div class="stat-label"><i class="fas fa-history"></i> Total Setoran</div>
-                                    <div class="stat-value"><?= $p['total_setoran'] ?> Kali</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-label"><i class="fas fa-trophy"></i> Santri Teraktif</div>
-                                    <div class="stat-value top-student"><?= htmlspecialchars($p['top_student']) ?></div>
+                                    <div class="stat-label"><i class="fas fa-chart-simple"></i> Rata-rata Nilai</div>
+                                    <div class="stat-value"><?= $p['avg_nilai'] ?></div>
                                 </div>
                                 
                                 <div class="progress-container">
                                     <div class="progress-label">
-                                        <span>Progres Kelancaran Hafalan</span>
-                                        <span><?= number_format((float)$p['avg_nilai'] * 10, 1) ?>%</span>
+                                        <span><i class="fas fa-flag-checkered"></i> Progres Ketuntasan</span>
+                                        <span><?= $p['percent_tuntas'] ?>%</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: <?= (float)$p['avg_nilai'] * 10 ?>%;"></div>
+                                        <div class="progress-fill" style="width: <?= $p['percent_tuntas'] ?>%;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 25px;">
+                                    <div style="font-size: 0.7rem; font-weight: 800; color: var(--gray); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;">
+                                        <i class="fas fa-list-ul" style="color: var(--primary);"></i> PROGRES TERBARU SANTRI
+                                    </div>
+                                    <div class="student-table-container">
+                                        <table class="student-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Santri</th>
+                                                    <th>Surah Terakhir</th>
+                                                    <th style="text-align: center;">Nilai</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach($p['students'] as $s): ?>
+                                                    <tr>
+                                                        <td style="width: 38%;">
+                                                            <div class="s-name-cell"><?= htmlspecialchars($s['nama_santri']) ?></div>
+                                                            <div style="font-size:0.6rem; color:var(--gray); margin-top: 2px;">NIS: <?= htmlspecialchars($s['nis'] ?? '-') ?></div>
+                                                        </td>
+                                                        <td style="width: 42%;">
+                                                            <?php if(!empty($s['surah']) && $s['surah'] != '-'): ?>
+                                                                <div class="s-surah-cell"><?= htmlspecialchars($s['surah']) ?></div>
+                                                                <?php if(isset($s['ayat_awal']) && $s['ayat_awal']): ?>
+                                                                    <div class="s-ayat-cell">Ayat <?= $s['ayat_awal'] ?>-<?= $s['ayat_akhir'] ?></div>
+                                                                <?php endif; ?>
+                                                            <?php else: ?>
+                                                                <span style="color:var(--gray); font-style:italic; font-size:0.75rem;">Belum ada setoran</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td style="text-align: center; width: 20%;">
+                                                            <?php if($s['nilai'] !== null && $s['nilai'] > 0): ?>
+                                                                <?php 
+                                                                    $bClass = ($s['nilai'] >= 8) ? 'badge-lancar' : 'badge-mengulang';
+                                                                    $icon = ($s['nilai'] >= 8) ? 'fa-star' : 'fa-book-open';
+                                                                ?>
+                                                                <span class="badge-mini <?= $bClass ?>">
+                                                                    <i class="fas <?= $icon ?>"></i> <?= $s['nilai'] ?>/9
+                                                                </span>
+                                                            <?php else: ?>
+                                                                <span class="badge-mini badge-none">-</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -403,21 +470,21 @@
             <?php endif; ?>
 
             <!-- INFORMASI DASHBOARD -->
-            <div class="section-card" style="margin-top: 22px;">
+            <div class="section-card" style="margin-top: 28px;">
                 <div class="card-header">
                     <div class="card-title">
                         <div style="width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.1);color:var(--info);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-info-circle"></i>
+                            <i class="fas fa-circle-info"></i>
                         </div>
                         Informasi Progres Hafalan
                     </div>
                 </div>
                 <div style="padding: 20px 24px;">
-                    <ul style="margin-left: 20px; font-size: 0.85rem; color: var(--gray);">
-                        <li>• <strong>Rata-rata Nilai</strong> - Nilai rata-rata dari seluruh setoran hafalan di kelas tersebut</li>
-                        <li>• <strong>Total Setoran</strong> - Jumlah total setoran hafalan yang telah dicatat</li>
-                        <li>• <strong>Santri Teraktif</strong> - Santri dengan jumlah setoran terbanyak di kelas</li>
-                        <li>• <strong>Progres Kelancaran</strong> - Persentase kelancaran hafalan berdasarkan rata-rata nilai (skala 1-10)</li>
+                    <ul style="margin-left: 20px; font-size: 0.85rem; color: var(--gray); display: flex; flex-direction: column; gap: 8px;">
+                        <li>• <strong>Persentase Tuntas</strong> - Persentase santri yang mencapai nilai minimal 8 pada setoran terakhir</li>
+                        <li>• <strong>Rata-rata Nilai</strong> - Nilai rata-rata dari seluruh santri di kelas (skala 1-9)</li>
+                        <li>• <strong>Surah Terakhir</strong> - Materi terbaru yang disetorkan oleh santri</li>
+                        <li>• <strong>Status Nilai</strong> - <span style="color:var(--success); font-weight:700;">Nilai ≥ 8: Tuntas (Lancar)</span> | <span style="color:var(--danger); font-weight:700;">Nilai 1-7: Muroja'ah</span></li>
                     </ul>
                 </div>
             </div>
@@ -425,37 +492,43 @@
     </div>
 
     <script>
-        // Sidebar toggle logic
+        // Sidebar toggle logic - SAMA PERSIS DENGAN HALAMAN ABSENSI
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-        });
+        if(menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            });
+        }
         
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
+        if(sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
         
         // User dropdown logic
         const userDropdownToggle = document.getElementById('userDropdownToggle');
         const userDropdown = document.getElementById('userDropdown');
         
-        userDropdownToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userDropdown.classList.toggle('active');
-        });
-        
-        document.addEventListener('click', function(e) {
-            if (!userDropdown.contains(e.target) && !userDropdownToggle.contains(e.target)) {
-                userDropdown.classList.remove('active');
-            }
-        });
+        if(userDropdownToggle && userDropdown) {
+            userDropdownToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!userDropdown.contains(e.target) && !userDropdownToggle.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+        }
         
         // Logout confirmation
         const logoutBtn = document.getElementById('logoutBtn');
@@ -478,11 +551,20 @@
         
         // Handle window resize
         window.addEventListener('resize', function() {
-            if (window.innerWidth > 992) {
+            if (window.innerWidth > 992 && sidebar && sidebarOverlay) {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
                 document.body.style.overflow = '';
             }
+        });
+        
+        // Animate progress bars on load
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
         });
     </script>
 </body>

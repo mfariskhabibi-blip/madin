@@ -6,6 +6,7 @@ use App\Models\SantriModel;
 use App\Models\HafalanModel;
 use App\Models\AbsensiModel;
 use App\Models\PembayaranModel;
+use App\Models\KelasUstadzModel;
 use App\Models\PengumumanModel;
 
 class Ortu extends BaseController
@@ -41,6 +42,17 @@ class Ortu extends BaseController
         }
 
         $pengumuman = $this->pengumumanModel->getPengumumanByRole('ortu');
+
+        // Ambil data ustadz pengajar per kelas untuk setiap anak
+        $kelasUstadzModel = new KelasUstadzModel();
+        foreach ($anak as &$a) {
+            if (!empty($a['id_kelas'])) {
+                $a['ustadz_list'] = $kelasUstadzModel->getUstadzByKelas($a['id_kelas']);
+            } else {
+                $a['ustadz_list'] = [];
+            }
+        }
+        unset($a);
 
         $data = [
             'judul' => 'Dashboard Orang Tua',
@@ -149,5 +161,86 @@ class Ortu extends BaseController
             'jadwal' => $jadwal
         ];
         return view('ortu/jadwal', $data);
+    }
+
+    public function progres($id_santri = null)
+    {
+        $id_ortu = session()->get('id');
+        $anak = $this->santriModel->getChildrenByParent($id_ortu);
+        
+        if (empty($anak)) {
+            return view('ortu/progres', ['anak' => [], 'judul' => 'Progres Santri']);
+        }
+
+        // Tentukan santri mana yang dilihat
+        $selected_id = $id_santri;
+        if (!$selected_id) {
+            $selected_id = $anak[0]['id'];
+        }
+
+        // Cari data santri dalam list anak (untuk verifikasi kepemilikan)
+        $current_santri = null;
+        foreach ($anak as $a) {
+            if ($a['id'] == $selected_id) {
+                $current_santri = $a;
+                break;
+            }
+        }
+
+        if (!$current_santri) {
+            return redirect()->to('/ortu/progres')->with('error', 'Data santri tidak ditemukan.');
+        }
+
+        // 1. Ambil Statistika Absensi
+        $absensi = $this->absensiModel->where('id_santri', $selected_id)->findAll();
+        $stats_absensi = [
+            'Hadir' => 0,
+            'Izin' => 0,
+            'Sakit' => 0,
+            'Alpa' => 0,
+            'Total' => count($absensi)
+        ];
+        foreach ($absensi as $ab) {
+            if (isset($stats_absensi[$ab['status']])) {
+                $stats_absensi[$ab['status']]++;
+            }
+        }
+
+        // 2. Ambil Statistika Hafalan
+        $hafalan = $this->hafalanModel->where('id_santri', $selected_id)
+                                      ->orderBy('tanggal', 'ASC')
+                                      ->findAll();
+        
+        $total_hafalan = count($hafalan);
+        $avg_nilai = 0;
+        $trend_hafalan = [];
+        
+        if ($total_hafalan > 0) {
+            $sum_nilai = array_sum(array_column($hafalan, 'nilai'));
+            $avg_nilai = round($sum_nilai / $total_hafalan, 1);
+            
+            // Ambil 10 data terakhir untuk grafik tren
+            $latest_hafalan = array_slice($hafalan, -10);
+            foreach ($latest_hafalan as $h) {
+                $trend_hafalan[] = [
+                    'tanggal' => date('d/m', strtotime($h['tanggal'])),
+                    'nilai' => $h['nilai'],
+                    'surah' => $h['surah']
+                ];
+            }
+        }
+
+        $data = [
+            'judul' => 'Progres Perkembangan Santri',
+            'anak' => $anak,
+            'current_santri' => $current_santri,
+            'stats_absensi' => $stats_absensi,
+            'total_hafalan' => $total_hafalan,
+            'avg_nilai' => $avg_nilai,
+            'trend_hafalan' => $trend_hafalan,
+            'riwayat_terakhir' => array_reverse(array_slice($hafalan, -5))
+        ];
+
+        return view('ortu/progres', $data);
     }
 }

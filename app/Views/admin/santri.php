@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Santri - PTQ Al-Hikmah</title>
+    <title>Data Santri - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET (From Uniform Dashboard) */
@@ -27,7 +27,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -173,8 +173,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('admin/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -280,6 +280,7 @@
                     <thead>
                         <tr>
                             <th>Profil Santri</th>
+                            <th>Kelas</th>
                             <th>Tanggal Lahir</th>
                             <th>L/P</th>
                             <th>Nama Wali (Ortu)</th>
@@ -305,6 +306,12 @@
                                                 <div class="u-nis">NIS: <?= htmlspecialchars($s['nis'] ?? '-') ?></div>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td data-label="Kelas">
+                                        <span class="badge" style="background:rgba(14,165,233,.1);color:var(--info);font-weight:600;">
+                                            <i class="fas fa-school" style="margin-right:5px;"></i>
+                                            <?= htmlspecialchars($s['nama_kelas'] ?? 'Belum Ada Kelas') ?>
+                                        </span>
                                     </td>
                                     <td data-label="Tanggal Lahir"><span style="color:var(--gray);font-size:.85rem;font-weight:500;"><?= htmlspecialchars($s['tanggal_lahir'] ?? '-') ?></span></td>
                                     <td data-label="L/P">
@@ -385,15 +392,35 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tautkan ke Akun Orang Tua</label>
+                        <select name="id_ortu" class="form-control">
+                            <option value="">-- Tidak Ditautkan --</option>
+                            <?php foreach($ortuList as $o): ?>
+                                <option value="<?= $o['id'] ?>"><?= htmlspecialchars($o['nama_lengkap']) ?> (@<?= htmlspecialchars($o['username']) ?>)</option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pilih Kelas</label>
+                        <select name="id_kelas" class="form-control">
+                            <option value="">-- Belum Masuk Kelas --</option>
+                            <?php foreach($kelasList as $k): ?>
+                                <option value="<?= $k['id'] ?>"><?= htmlspecialchars($k['nama_kelas']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label class="form-label">Tautkan ke Akun Orang Tua</label>
-                    <select name="id_ortu" class="form-control">
-                        <option value="">-- Tidak Ditautkan --</option>
-                        <?php foreach($ortuList as $o): ?>
-                            <option value="<?= $o['id'] ?>"><?= htmlspecialchars($o['nama_lengkap']) ?> (@<?= htmlspecialchars($o['username']) ?>)</option>
+                    <label class="form-label">Ustadz Pembimbing (Binaan)</label>
+                    <select name="id_ustadz" class="form-control">
+                        <option value="">-- Tidak Ada Pembimbing Khusus --</option>
+                        <?php foreach($ustadzList as $u): ?>
+                            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['nama_lengkap']) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <div class="form-text">Bisa dihubungkan dengan akun orang tua kelak agar bisa memantau rapor.</div>
+                    <div class="form-text">Santri akan otomatis muncul di dashboard Ustadz yang dipilih.</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Alamat / Domisili</label>
@@ -439,12 +466,32 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tautkan ke Akun Orang Tua</label>
+                        <select name="id_ortu" id="edit_ortu" class="form-control">
+                            <option value="">-- Tidak Ditautkan --</option>
+                            <?php foreach($ortuList as $o): ?>
+                                <option value="<?= $o['id'] ?>"><?= htmlspecialchars($o['nama_lengkap']) ?> (@<?= htmlspecialchars($o['username']) ?>)</option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pilih Kelas</label>
+                        <select name="id_kelas" id="edit_kelas" class="form-control">
+                            <option value="">-- Belum Masuk Kelas --</option>
+                            <?php foreach($kelasList as $k): ?>
+                                <option value="<?= $k['id'] ?>"><?= htmlspecialchars($k['nama_kelas']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label class="form-label">Tautkan ke Akun Orang Tua</label>
-                    <select name="id_ortu" id="edit_ortu" class="form-control">
-                        <option value="">-- Tidak Ditautkan --</option>
-                        <?php foreach($ortuList as $o): ?>
-                            <option value="<?= $o['id'] ?>"><?= htmlspecialchars($o['nama_lengkap']) ?> (@<?= htmlspecialchars($o['username']) ?>)</option>
+                    <label class="form-label">Ustadz Pembimbing (Binaan)</label>
+                    <select name="id_ustadz" id="edit_ustadz" class="form-control">
+                        <option value="">-- Tidak Ada Pembimbing Khusus --</option>
+                        <?php foreach($ustadzList as $u): ?>
+                            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['nama_lengkap']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -517,6 +564,8 @@
         document.getElementById('edit_tgl').value = santri.tanggal_lahir || '';
         document.getElementById('edit_jk').value = santri.jenis_kelamin || 'L';
         document.getElementById('edit_ortu').value = santri.id_ortu || '';
+        document.getElementById('edit_kelas').value = santri.id_kelas || '';
+        document.getElementById('edit_ustadz').value = santri.id_ustadz || '';
         document.getElementById('edit_status').value = santri.status || 'aktif';
         document.getElementById('edit_alamat').value = santri.alamat || '';
         document.getElementById('editForm').action = '<?= base_url("admin/santri/update/") ?>' + santri.id;

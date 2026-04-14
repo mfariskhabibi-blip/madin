@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Administrator - PTQ Al-Hikmah</title>
+    <title>Dashboard Administrator - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET - Consistent with All Pages */
@@ -37,7 +37,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -281,8 +281,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('admin/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -360,7 +360,7 @@
             <!-- WELCOME CARD -->
             <div class="welcome-card">
                 <h2>Assalamu'alaikum, <?= htmlspecialchars($nama_admin ?? 'Administrator') ?>!</h2>
-                <p>Selamat datang di Dashboard Administrator PTQ Al-Hikmah. Kelola seluruh sistem pesantren dari satu platform terintegrasi.</p>
+                <p>Selamat datang di Dashboard Administrator PTQ Pencongan. Kelola seluruh sistem pesantren dari satu platform terintegrasi.</p>
             </div>
 
             <!-- QUICK ACTIONS -->
@@ -505,7 +505,7 @@
                     </div>
                 </div>
                 <div style="padding: 20px 24px;">
-                    <p style="margin-bottom: 12px;">Dashboard Administrator PTQ Al-Hikmah memberikan Anda kontrol penuh atas sistem manajemen pesantren. Anda dapat mengelola:</p>
+                    <p style="margin-bottom: 12px;">Dashboard Administrator PTQ Pencongan memberikan Anda kontrol penuh atas sistem manajemen pesantren. Anda dapat mengelola:</p>
                     <ul style="margin-left: 20px; margin-bottom: 15px;">
                         <li>• Akses Pengguna & Keamanan Sistem</li>
                         <li>• Data Pokok Santri dan Ustadz/Pengajar</li>

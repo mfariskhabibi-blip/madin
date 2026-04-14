@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muroja'ah Santri - PTQ Al-Hikmah</title>
+    <title>Muroja'ah Santri - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET (From Uniform Dashboard) */
@@ -27,7 +27,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -97,6 +97,14 @@
         .badge-sedang { background: rgba(221,107,32,.1); color: var(--warning); }
         .badge-mengulang { background: rgba(229,62,62,.1); color: var(--danger); }
 
+        .act-btn { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; font-size: .85rem; cursor: pointer; transition: .2s; color: #fff; }
+        .act-edit { background: var(--info); }
+        .act-edit:hover { background: #0284c7; }
+        .act-murojaah { background: var(--secondary); }
+        .act-murojaah:hover { background: var(--primary-dark); }
+        .act-delete { background: var(--danger); }
+        .act-delete:hover { background: #c53030; }
+
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
         .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); }
@@ -155,8 +163,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('ustadz/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -234,6 +242,38 @@
             <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
         <?php endif; ?>
 
+        <div class="section-card" style="margin-bottom:15px; background:transparent; box-shadow:none;">
+            <form action="<?= base_url('ustadz/murojaah') ?>" method="get" style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+                <div style="flex:1; min-width:200px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Cari Santri</label>
+                    <input type="text" name="santri" class="form-control" placeholder="Nama santri..." value="<?= htmlspecialchars($filter['santri'] ?? '') ?>">
+                </div>
+                <div style="flex:1; min-width:150px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Kelas</label>
+                    <select name="id_kelas" class="form-control">
+                        <option value="">-- Semua Kelas --</option>
+                        <?php foreach($kelasList as $k): ?>
+                            <option value="<?= $k['id'] ?>" <?= ($filter['id_kelas'] == $k['id']) ? 'selected' : '' ?>><?= htmlspecialchars($k['nama_kelas']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div style="flex:1; min-width:150px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Tanggal</label>
+                    <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($filter['tanggal'] ?? '') ?>">
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button type="submit" class="btn btn-primary" style="height:45px; padding:0 20px;">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <?php if(!empty($filter['santri']) || !empty($filter['id_kelas']) || !empty($filter['tanggal'])): ?>
+                        <a href="<?= base_url('ustadz/murojaah') ?>" class="btn btn-outline" style="height:45px; display:flex; align-items:center; justify-content:center; background:#fff;">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+        </div>
+
         <div class="section-card">
             <div class="card-header">
                 <div class="card-title">
@@ -242,9 +282,9 @@
                     </div>
                     Riwayat Muroja'ah Santri
                 </div>
-                <button class="btn btn-primary" onclick="document.getElementById('addModal').classList.add('active')">
+                <!-- <button class="btn btn-primary" onclick="openAddModal()">
                     <i class="fas fa-plus"></i> Tambah Muroja'ah
-                </button>
+                </button> -->
             </div>
             
             <div class="table-responsive">
@@ -253,8 +293,9 @@
                         <tr>
                             <th>Tanggal & Santri</th>
                             <th>Materi Muroja'ah</th>
-                            <th>Status Kelancaran</th>
+                            <th>Kinerja (Nilai)</th>
                             <th>Keterangan</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -272,17 +313,28 @@
                                         <div class="surah-text"><?= htmlspecialchars($r['surah']) ?></div>
                                         <div class="ayat-text">Ayat: <?= htmlspecialchars($r['ayat_awal']) ?> s/d <?= htmlspecialchars($r['ayat_akhir']) ?></div>
                                     </td>
-                                    <td data-label="Status">
+                                    <td data-label="Nilai">
                                         <?php
                                             $bClass = 'badge-lancar';
-                                            $bIcon = 'fa-check';
-                                            if($r['status'] == 'Sedang') { $bClass = 'badge-sedang'; $bIcon = 'fa-minus'; }
-                                            if($r['status'] == 'Mengulang') { $bClass = 'badge-mengulang'; $bIcon = 'fa-redo'; }
+                                            $bIcon = 'fa-check-double';
+                                            $label = 'Tuntas (' . $r['nilai'] . ')';
+                                            if($r['nilai'] < 8) { 
+                                                $bClass = 'badge-mengulang'; 
+                                                $bIcon = 'fa-redo'; 
+                                                $label = 'Muroja\'ah (' . $r['nilai'] . ')';
+                                            }
                                         ?>
-                                        <span class="badge <?= $bClass ?>"><i class="fas <?= $bIcon ?>"></i> <?= htmlspecialchars($r['status']) ?></span>
+                                        <span class="badge <?= $bClass ?>" style="font-size: .85rem; padding: 8px 12px; width: 100%; justify-content: center;">
+                                            <i class="fas <?= $bIcon ?>"></i> <?= $label ?>
+                                        </span>
                                     </td>
                                     <td data-label="Keterangan">
                                         <span style="font-size: .85rem; color:var(--gray);"><?= htmlspecialchars($r['keterangan'] ?? '-') ?></span>
+                                    </td>
+                                    <td data-label="Aksi">
+                                        <button class="act-btn act-murojaah" onclick='prepMurojaah(<?= json_encode($r) ?>)' title="Muroja'ah Kembali">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -310,9 +362,13 @@
                 <button type="button" class="btn-close" onclick="document.getElementById('addModal').classList.remove('active')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div id="santri_info_display" style="display:none; padding:12px; background:rgba(26,95,180,.05); border-left:4px solid var(--primary); border-radius:4px; margin-bottom:18px;">
+                    <div style="font-size:.7rem; color:var(--gray); text-transform:uppercase; font-weight:700;">Muroja'ah Untuk Santri:</div>
+                    <div id="display_nama_santri" style="font-weight:700; color:var(--primary-dark); font-size:1.1rem;"></div>
+                </div>
+                <div class="form-group" id="santri_select_group">
                     <label class="form-label">Santri *</label>
-                    <select name="id_santri" class="form-control" required>
+                    <select name="id_santri" id="add_id_santri" class="form-control" required>
                         <option value="">-- Pilih Santri --</option>
                         <?php foreach($santriList as $s): ?>
                             <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['nama_santri']) ?></option>
@@ -321,28 +377,30 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Tanggal</label>
-                    <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>">
+                    <input type="date" name="tanggal" id="add_tanggal" class="form-control" value="<?= date('Y-m-d') ?>">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Surah *</label>
-                    <input type="text" name="surah" class="form-control" required placeholder="Contoh: Al-Baqarah">
+                    <input type="text" name="surah" id="add_surah" class="form-control" required placeholder="Contoh: Al-Baqarah">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Ayat Awal *</label>
-                        <input type="number" name="ayat_awal" class="form-control" required min="1" placeholder="1">
+                        <input type="number" name="ayat_awal" id="add_ayat_awal" class="form-control" required min="1" placeholder="1">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ayat Akhir *</label>
-                        <input type="number" name="ayat_akhir" class="form-control" required min="1" placeholder="10">
+                        <input type="number" name="ayat_akhir" id="add_ayat_akhir" class="form-control" required min="1" placeholder="10">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Kelancaran *</label>
-                    <select name="status" class="form-control" required>
-                        <option value="Lancar">Lancar</option>
-                        <option value="Sedang">Sedang</option>
-                        <option value="Mengulang">Mengulang</option>
+                    <label class="form-label">Nilai / Kinerja *</label>
+                    <select name="nilai" class="form-control" required>
+                        <option value="9">Istimewa (9)</option>
+                        <option value="8">Lancar (8)</option>
+                        <option value="7">Cukup / Muroja'ah (7)</option>
+                        <option value="6">Kurang / Muroja'ah (6)</option>
+                        <option value="5">Sangat Kurang / Muroja'ah (5)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -391,6 +449,34 @@
     });
 
     document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
+
+    function openAddModal() {
+        // Reset Form
+        document.getElementById('add_id_santri').value = '';
+        document.getElementById('santri_select_group').style.display = 'block';
+        document.getElementById('santri_info_display').style.display = 'none';
+        document.getElementById('add_surah').value = '';
+        document.getElementById('add_ayat_awal').value = '';
+        document.getElementById('add_ayat_akhir').value = '';
+        document.getElementById('add_tanggal').value = new Date().toISOString().split('T')[0];
+        document.getElementById('addModal').classList.add('active');
+    }
+
+    function prepMurojaah(data) {
+        // Set Data
+        document.getElementById('add_id_santri').value = data.id_santri || '';
+        document.getElementById('display_nama_santri').innerText = data.nama_santri || '';
+        
+        // Toggle UI for "Automatic" feel
+        document.getElementById('santri_select_group').style.display = 'none';
+        document.getElementById('santri_info_display').style.display = 'block';
+        
+        document.getElementById('add_surah').value = data.surah || '';
+        document.getElementById('add_ayat_awal').value = data.ayat_awal || '';
+        document.getElementById('add_ayat_akhir').value = data.ayat_akhir || '';
+        document.getElementById('add_tanggal').value = new Date().toISOString().split('T')[0];
+        document.getElementById('addModal').classList.add('active');
+    }
 </script>
 </body>
 </html>

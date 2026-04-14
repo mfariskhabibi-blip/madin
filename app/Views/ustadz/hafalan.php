@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catat Hafalan Santri - PTQ Al-Hikmah</title>
+    <title>Catat Hafalan Santri - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET (From Uniform Dashboard) */
@@ -27,7 +27,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -174,8 +174,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('ustadz/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -263,6 +263,38 @@
             </div>
         <?php endif; ?>
 
+        <div class="section-card" style="margin-bottom:15px; background:transparent; box-shadow:none;">
+            <form action="<?= base_url('ustadz/hafalan') ?>" method="get" style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+                <div style="flex:1; min-width:200px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Cari Santri</label>
+                    <input type="text" name="santri" class="form-control" placeholder="Nama santri..." value="<?= htmlspecialchars($filter['santri'] ?? '') ?>">
+                </div>
+                <div style="flex:1; min-width:150px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Kelas</label>
+                    <select name="id_kelas" class="form-control">
+                        <option value="">-- Semua Kelas --</option>
+                        <?php foreach($kelasList as $k): ?>
+                            <option value="<?= $k['id'] ?>" <?= ($filter['id_kelas'] == $k['id']) ? 'selected' : '' ?>><?= htmlspecialchars($k['nama_kelas']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div style="flex:1; min-width:150px;">
+                    <label style="font-size:.7rem; font-weight:700; color:var(--gray); text-transform:uppercase; margin-bottom:5px; display:block;">Tanggal</label>
+                    <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($filter['tanggal'] ?? '') ?>">
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button type="submit" class="btn btn-primary" style="height:45px; padding:0 20px;">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <?php if(!empty($filter['santri']) || !empty($filter['id_kelas']) || !empty($filter['tanggal'])): ?>
+                        <a href="<?= base_url('ustadz/hafalan') ?>" class="btn btn-outline" style="height:45px; display:flex; align-items:center; justify-content:center; background:#fff;">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+        </div>
+
         <div class="section-card">
             <div class="card-header">
                 <div class="card-title">
@@ -282,7 +314,7 @@
                         <tr>
                             <th>Tanggal & Santri</th>
                             <th>Materi / Surah</th>
-                            <th>Predikat / Kinerja</th>
+                            <th>Kinerja (Nilai)</th>
                             <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
@@ -302,14 +334,15 @@
                                         <div class="surah-text"><?= htmlspecialchars($r['surah']) ?></div>
                                         <div class="ayat-text">Ayat: <?= htmlspecialchars($r['ayat_awal']) ?> s/d <?= htmlspecialchars($r['ayat_akhir']) ?></div>
                                     </td>
-                                    <td data-label="Status">
+                                    <td data-label="Nilai">
                                         <?php
                                             $bClass = 'badge-lancar';
-                                            $bIcon = 'fa-check';
-                                            if($r['status'] == 'Sedang') { $bClass = 'badge-sedang'; $bIcon = 'fa-minus'; }
-                                            if($r['status'] == 'Mengulang') { $bClass = 'badge-mengulang'; $bIcon = 'fa-redo'; }
+                                            $bIcon = 'fa-star';
+                                            if($r['nilai'] < 8) { $bClass = 'badge-mengulang'; $bIcon = 'fa-redo'; }
                                         ?>
-                                        <span class="badge <?= $bClass ?>"><i class="fas <?= $bIcon ?>"></i> <?= htmlspecialchars($r['status']) ?></span>
+                                        <span class="badge <?= $bClass ?>" style="font-size: 1rem; padding: 8px 15px;">
+                                            <i class="fas <?= $bIcon ?>"></i> <?= htmlspecialchars($r['nilai'] ?? '0') ?>
+                                        </span>
                                     </td>
                                     <td data-label="Keterangan">
                                         <span style="font-size: .85rem; color:var(--gray);"><?= htmlspecialchars($r['keterangan'] ?? '-') ?></span>
@@ -378,11 +411,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status *</label>
-                    <select name="status" class="form-control" required>
-                        <option value="Lancar">Lancar</option>
-                        <option value="Sedang">Sedang</option>
-                        <option value="Mengulang">Mengulang</option>
+                    <label class="form-label">Nilai / Kinerja *</label>
+                    <select name="nilai" class="form-control" required>
+                        <option value="9">Istimewa (9)</option>
+                        <option value="8">Lancar (8)</option>
+                        <option value="7">Cukup / Muroja'ah (7)</option>
+                        <option value="6">Kurang / Muroja'ah (6)</option>
+                        <option value="5">Sangat Kurang / Muroja'ah (5)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -429,11 +464,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Status *</label>
-                    <select name="status" id="edit_status" class="form-control" required>
-                        <option value="Lancar">Lancar</option>
-                        <option value="Sedang">Sedang</option>
-                        <option value="Mengulang">Mengulang</option>
+                    <label class="form-label">Nilai / Kinerja *</label>
+                    <select name="nilai" id="edit_nilai" class="form-control" required>
+                        <option value="9">Istimewa (9)</option>
+                        <option value="8">Lancar (8)</option>
+                        <option value="7">Cukup / Muroja'ah (7)</option>
+                        <option value="6">Kurang / Muroja'ah (6)</option>
+                        <option value="5">Sangat Kurang / Muroja'ah (5)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -496,7 +533,7 @@
         document.getElementById('edit_surah').value = d.surah || '';
         document.getElementById('edit_awal').value = d.ayat_awal || '';
         document.getElementById('edit_akhir').value = d.ayat_akhir || '';
-        document.getElementById('edit_status').value = d.status || 'Lancar';
+        document.getElementById('edit_nilai').value = d.nilai || '8';
         document.getElementById('edit_ket').value = d.keterangan || '';
         document.getElementById('editForm').action = '<?= base_url("ustadz/hafalan/update/") ?>' + d.id;
         document.getElementById('editModal').classList.add('active');

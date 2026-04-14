@@ -109,6 +109,8 @@ $routes->group('ortu', ['filter' => ['auth', 'role:ortu']], static function ($ro
 
     // Ortu Mockup Pages
     $routes->get('hafalan', 'Ortu::hafalan');
+    $routes->get('progres', 'Ortu::progres');
+    $routes->get('progres/(:num)', 'Ortu::progres/$1');
     $routes->get('kehadiran', 'Ortu::kehadiran');
     $routes->get('pembayaran', 'Ortu::pembayaran');
     $routes->post('pembayaran/upload/(:num)', 'Ortu::saveBukti/$1');

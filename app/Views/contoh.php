@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - PTQ Al-Hikmah</title>
+    <title>Dashboard Admin - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET */
@@ -821,8 +821,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="logo">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </div>
                 </div>
                 
@@ -1171,7 +1171,7 @@
             <!-- INFORMASI -->
             <div class="dashboard-section">
                 <h3>Selamat Datang, <?= htmlspecialchars($nama_admin ?? 'Administrator') ?>!</h3>
-                <p>Dashboard admin PTQ Al-Hikmah memberikan Anda kontrol penuh atas sistem manajemen pesantren. Anda dapat mengelola:</p>
+                <p>Dashboard admin PTQ Pencongan memberikan Anda kontrol penuh atas sistem manajemen pesantren. Anda dapat mengelola:</p>
                 <ul style="margin-left: 20px; margin-top: 10px;">
                     <li>• Data santri dan pengajar</li>
                     <li>• Data orang tua santri</li>

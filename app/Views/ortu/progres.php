@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Pelajaran - PTQ Pencongan</title>
+    <title>Progres Santri - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* VARIABLES & RESET - Consistent with All Pages */
         :root {
@@ -13,7 +14,7 @@
             --light-gray: #e2e8f0; --dark: #2d3748; --danger: #e53e3e;
             --success: #38a169; --warning: #dd6b20; --info: #0ea5e9;
             --purple: #8b5cf6; --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
             --radius: 8px; --transition: all 0.3s ease;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -70,45 +71,54 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
         .page-subtitle { color: var(--gray); font-size: 0.9rem; margin-bottom: 25px; }
         
-        /* ANAK LIST */
-        .anak-list { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; }
-        .anak-tag { background: white; padding: 10px 20px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; color: var(--primary); border: 1px solid var(--primary); box-shadow: var(--shadow); transition: var(--transition); }
-        .anak-tag:hover { background: var(--primary); color: white; transform: translateY(-2px); }
-        .anak-tag i { margin-right: 8px; }
+        /* SECTION CARD */
+        .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
-        /* SCHEDULES CONTAINER */
-        .schedules-container { display: flex; flex-direction: column; gap: 24px; }
-        .day-section { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--light-gray); }
-        .day-header { background: var(--light); padding: 15px 25px; border-bottom: 1px solid var(--light-gray); display: flex; align-items: center; gap: 12px; }
-        .day-title { font-weight: 800; color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        /* SELECTOR CHILDREN */
+        .child-selector { background: white; padding: 5px; border-radius: 10px; border: 1px solid var(--light-gray); display: flex; gap: 5px; box-shadow: var(--shadow); }
+        .child-opt { padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; color: var(--gray); transition: 0.2s; }
+        .child-opt.active { background: var(--primary); color: white; }
         
-        .jadwal-list { display: flex; flex-direction: column; }
-        .jadwal-row { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; padding: 18px 25px; border-bottom: 1px solid var(--light-gray); transition: var(--transition); }
-        .jadwal-row:last-child { border-bottom: none; }
-        .jadwal-row:hover { background: #fafcff; }
+        /* SUMMARY CARDS */
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 30px; }
+        .sum-card { background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); position: relative; overflow: hidden; border: 1px solid var(--light-gray); }
+        .sum-card::after { content: ''; position: absolute; top:0; right:0; width: 4px; height: 100%; background: var(--primary); }
+        .sum-card.success::after { background: var(--success); }
+        .sum-card.warning::after { background: var(--accent); }
         
-        .time-box { background: rgba(26, 95, 180, 0.1); color: var(--primary); padding: 8px 14px; border-radius: 8px; font-weight: 700; font-family: monospace; font-size: 0.9rem; text-align: center; width: fit-content; }
-        .activity-info { padding: 0 20px; }
-        .activity-name { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
-        .activity-details { font-size: 0.8rem; color: var(--gray); display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .activity-details i { color: var(--accent); width: 20px; }
+        .sum-label { font-size: 0.85rem; color: var(--gray); font-weight: 600; margin-bottom: 10px; display: block; }
+        .sum-val { font-size: 2rem; font-weight: 800; color: var(--dark); display: block; }
+        .sum-trend { font-size: 0.75rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+        .up { color: var(--success); }
         
-        .action-btn { color: var(--primary); background: none; border: none; cursor: pointer; padding: 8px; border-radius: 6px; transition: var(--transition); }
-        .action-btn:hover { background: rgba(26, 95, 180, 0.1); }
+        /* CHARTS SECTION */
+        .charts-row { display: grid; grid-template-columns: 2fr 1.2fr; gap: 24px; margin-bottom: 30px; }
+        .chart-box { background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--light-gray); }
+        .chart-title { font-size: 1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .chart-title i { color: var(--primary); }
+        
+        /* TABLE */
+        .table-box { background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--light-gray); }
+        .modern-table { width: 100%; border-collapse: collapse; }
+        .modern-table th { text-align: left; padding: 12px 15px; background: #f8fafc; font-size: 0.7rem; text-transform: uppercase; color: var(--gray); font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid var(--light-gray); }
+        .modern-table td { padding: 15px; border-bottom: 1px solid var(--light-gray); vertical-align: middle; }
+        .modern-table tr:last-child td { border-bottom: none; }
+        .modern-table tr:hover td { background: #fafcff; }
+        
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+        .bg-lancar { background: #dcfce7; color: var(--success); }
+        .bg-murojaah { background: #fee2e2; color: var(--danger); }
         
         /* EMPTY STATE */
-        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--light-gray); }
-        .empty-state i { font-size: 4rem; color: var(--light-gray); margin-bottom: 20px; }
-        .empty-state h3 { font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; font-weight: 600; }
-        .empty-state p { font-size: 0.9rem; color: var(--gray); }
-        
-        /* ALERT */
-        .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
-        @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .empty-state i { font-size: 3rem; color: var(--light-gray); margin-bottom: 15px; }
+        .empty-state h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 5px; }
+        .empty-state p { font-size: 0.85rem; color: var(--gray); }
         
         .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
         .sidebar-overlay.active { display: block; opacity: 1; }
@@ -121,18 +131,17 @@
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); }
             .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .charts-row { grid-template-columns: 1fr; }
         }
         
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
-            .jadwal-row { grid-template-columns: 1fr; gap: 12px; padding: 15px 20px; }
-            .time-box { width: fit-content; }
-            .activity-info { padding: 0; }
-            .activity-details { gap: 12px; flex-direction: column; align-items: flex-start; }
-            .anak-tag { padding: 6px 14px; font-size: 0.75rem; }
-            .day-header { padding: 12px 20px; }
-            .day-title { font-size: 0.9rem; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .child-selector { flex-wrap: wrap; justify-content: center; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .modern-table th, .modern-table td { padding: 10px; }
         }
     </style>
 </head>
@@ -203,96 +212,108 @@
             </div>
             
             <div class="sidebar-menu">
-                <div class="menu-item"><a href="<?= base_url('ortu/dashboard') ?>"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ortu/progres') ?>"><i class="fas fa-chart-line"></i><span>Progres Santri</span></a></div>
-                <div class="menu-item"><a href="<?= base_url('ortu/hafalan') ?>"><i class="fas fa-quran"></i><span>Hafalan Anak</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ortu/dashboard') ?>"><i class="fas fa-home"></i><span>Dashboard</span></a></div>
+                <div class="menu-item active"><a href="<?= base_url('ortu/progres') ?>"><i class="fas fa-chart-line"></i><span>Progres Santri</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ortu/hafalan') ?>"><i class="fas fa-book-open"></i><span>Hafalan</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ortu/kehadiran') ?>"><i class="fas fa-calendar-check"></i><span>Kehadiran</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ortu/pembayaran') ?>"><i class="fas fa-wallet"></i><span>Pembayaran</span></a></div>
-                <div class="menu-item active"><a href="<?= base_url('ortu/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ortu/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal</span></a></div>
             </div>
         </div>
 
         <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
-            <h1 class="page-title"><i class="fas fa-calendar-alt"></i> Jadwal Pelajaran</h1>
-            <p class="page-subtitle">Jadwal kegiatan belajar mengajar untuk anak Anda</p>
-
-            <!-- Alert Messages -->
-            <?php if (session()->getFlashdata('success')): ?>
-                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
-            <?php endif; ?>
-
-            <!-- DAFTAR ANAK -->
-            <?php if(isset($anak) && !empty($anak)): ?>
-            <div class="anak-list">
-                <?php foreach($anak as $a): ?>
-                    <div class="anak-tag">
-                        <i class="fas fa-child"></i> <?= htmlspecialchars($a['nama_santri']) ?> 
-                        <span style="font-weight: normal; opacity: 0.7;">(<?= htmlspecialchars($a['nama_kelas'] ?? 'Belum ada kelas') ?>)</span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-
-            <!-- JADWAL -->
-            <?php if(!empty($jadwal)): 
-                $groupedJadwal = [];
-                foreach($jadwal as $j) {
-                    $groupedJadwal[$j['hari']][] = $j;
-                }
-                $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            ?>
-            <div class="schedules-container">
-                <?php foreach($days as $day): if(!isset($groupedJadwal[$day])) continue; ?>
-                <div class="day-section">
-                    <div class="day-header">
-                        <i class="fas fa-calendar-day" style="color: var(--primary); font-size: 1.2rem;"></i>
-                        <div class="day-title"><?= $day ?></div>
-                    </div>
-                    <div class="jadwal-list">
-                        <?php foreach($groupedJadwal[$day] as $j): ?>
-                        <div class="jadwal-row">
-                            <div class="time-box">
-                                <i class="far fa-clock" style="margin-right: 5px;"></i>
-                                <?= substr($j['jam_mulai'], 0, 5) ?> - <?= substr($j['jam_selesai'], 0, 5) ?>
-                            </div>
-                            <div class="activity-info">
-                                <div class="activity-name"><?= htmlspecialchars($j['nama_kegiatans']) ?></div>
-                                <div class="activity-details">
-                                    <span><i class="fas fa-school"></i> <?= htmlspecialchars($j['nama_kelas']) ?></span>
-                                    <span><i class="fas fa-chalkboard-user"></i> <?= htmlspecialchars($j['nama_ustadz'] ?? 'Ustadz') ?></span>
-                                </div>
-                            </div>
-                            <div class="action-btn" title="Detail">
-                                <i class="fas fa-info-circle"></i>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
+            <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
+                <div>
+                    <h1 class="page-title"><i class="fas fa-chart-line"></i> Progres Santri</h1>
+                    <p class="page-subtitle">Statistik perkembangan <strong><?= $current_santri['nama_santri'] ?? 'Santri' ?></strong></p>
                 </div>
-                <?php endforeach; ?>
-            </div>
-            <?php else: ?>
-            <div class="empty-state">
-                <i class="fas fa-calendar-times"></i>
-                <h3>Belum Ada Jadwal</h3>
-                <p>Data jadwal belum tersedia atau anak Anda belum ditempatkan di kelas manapun.<br>Silakan hubungi administrator untuk informasi lebih lanjut.</p>
-            </div>
-            <?php endif; ?>
-
-            <!-- INFORMASI TAMBAHAN -->
-            <div style="margin-top: 30px; background: white; border-radius: var(--radius); padding: 20px; border: 1px solid var(--light-gray); box-shadow: var(--shadow);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(14, 165, 233, 0.1); display: flex; align-items: center; justify-content: center; color: var(--info);">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--dark);">Informasi Jadwal</h3>
+                
+                <?php if (isset($anak) && count($anak) > 1): ?>
+                <div class="child-selector">
+                    <?php foreach ($anak as $a): ?>
+                    <a href="<?= base_url('ortu/progres/' . $a['id']) ?>" class="child-opt <?= ($current_santri['id'] == $a['id']) ? 'active' : '' ?>">
+                        <?= explode(' ', $a['nama_santri'])[0] ?>
+                    </a>
+                    <?php endforeach; ?>
                 </div>
-                <ul style="margin-left: 48px; font-size: 0.85rem; color: var(--gray); display: flex; flex-direction: column; gap: 6px;">
-                    <li>• <strong>Jadwal dapat berubah</strong> sewaktu-waktu sesuai dengan kebijakan pondok</li>
-                    <li>• <strong>Waktu kegiatan</strong> mengacu pada jam pesantren (WIB)</li>
-                    <li>• Untuk informasi lebih lanjut, silakan hubungi ustadz pengampu kelas</li>
-                </ul>
+                <?php endif; ?>
+            </div>
+
+            <!-- SUMMARY CARDS -->
+            <div class="summary-grid">
+                <div class="sum-card success">
+                    <span class="sum-label">Kehadiran Keseluruhan</span>
+                    <span class="sum-val"><?= isset($stats_absensi['Total']) && $stats_absensi['Total'] > 0 ? round(($stats_absensi['Hadir'] / $stats_absensi['Total']) * 100) : 0 ?>%</span>
+                    <div class="sum-trend up"><i class="fas fa-calendar-check"></i> <?= $stats_absensi['Hadir'] ?? 0 ?> / <?= $stats_absensi['Total'] ?? 0 ?> Pertemuan</div>
+                </div>
+                
+                <div class="sum-card">
+                    <span class="sum-label">Rata-rata Nilai Hafalan</span>
+                    <span class="sum-val"><?= $avg_nilai ?? 0 ?> <small>/ 9</small></span>
+                    <div class="sum-trend" style="color:var(--primary);"><i class="fas fa-star"></i> Skala Nasional / Sekolah</div>
+                </div>
+
+                <div class="sum-card warning">
+                    <span class="sum-label">Total Setoran Hafalan</span>
+                    <span class="sum-val"><?= $total_hafalan ?? 0 ?></span>
+                    <div class="sum-trend" style="color:var(--accent);"><i class="fas fa-book-quran"></i> Surah Aktif: <?= !empty($riwayat_terakhir) ? $riwayat_terakhir[0]['surah'] : '-' ?></div>
+                </div>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="charts-row">
+                <div class="chart-box">
+                    <div class="chart-title"><i class="fas fa-chart-area"></i> Tren Nilai 10 Setoran Terakhir</div>
+                    <canvas id="hafalanTrend" height="150"></canvas>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Komposisi Kehadiran</div>
+                    <canvas id="attendancePie"></canvas>
+                </div>
+            </div>
+
+            <!-- RECENT ACTIVITY -->
+            <div class="table-box">
+                <div class="chart-title"><i class="fas fa-history"></i> Riwayat 5 Setoran Terakhir</div>
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Materi Surah</th>
+                                <th>Ayat</th>
+                                <th>Skor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($riwayat_terakhir)): ?>
+                                <?php foreach ($riwayat_terakhir as $r): ?>
+                                <tr>
+                                    <td><?= date('d M Y', strtotime($r['tanggal'])) ?></td>
+                                    <td style="font-weight: 700; color: var(--primary-dark);"><?= htmlspecialchars($r['surah']) ?></td>
+                                    <td style="font-size: 0.8rem; color: var(--gray);">Ayat <?= $r['ayat_awal'] ?> - <?= $r['ayat_akhir'] ?></td>
+                                    <td><strong style="font-size: 1.1rem;"><?= $r['nilai'] ?></strong></td>
+                                    <td>
+                                        <span class="badge <?= ($r['nilai'] >= 8) ? 'bg-lancar' : 'bg-murojaah' ?>">
+                                            <i class="fas <?= ($r['nilai'] >= 8) ? 'fa-check-circle' : 'fa-book-open' ?>"></i>
+                                            <?= ($r['nilai'] >= 8) ? 'Lancar' : 'Muroja\'ah' ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray);">
+                                        <i class="fas fa-book-open" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--light-gray);"></i>
+                                        Belum ada riwayat setoran hafalan.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -347,20 +368,71 @@
             });
         }
         
-        // Auto hide alerts after 5 seconds
-        document.querySelectorAll('.alert').forEach(alert => {
-            setTimeout(() => {
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 400);
-            }, 5000);
-        });
-        
         // Handle window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 992 && sidebar && sidebarOverlay) {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
                 document.body.style.overflow = '';
+            }
+        });
+
+        // Attendance Pie Chart
+        const ctxPie = document.getElementById('attendancePie').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Hadir', 'Izin', 'Sakit', 'Alpa'],
+                datasets: [{
+                    data: [<?= $stats_absensi['Hadir'] ?? 0 ?>, <?= $stats_absensi['Izin'] ?? 0 ?>, <?= $stats_absensi['Sakit'] ?? 0 ?>, <?= $stats_absensi['Alpa'] ?? 0 ?>],
+                    backgroundColor: ['#38a169', '#0ea5e9', '#e5a50a', '#e53e3e'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { weight: 'bold', size: 11 } } }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // Hafalan Trend Line Chart
+        const ctxLine = document.getElementById('hafalanTrend').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: [<?php if(!empty($trend_hafalan)) foreach($trend_hafalan as $t) echo "'" . $t['tanggal'] . "',"; ?>],
+                datasets: [{
+                    label: 'Skor Hafalan',
+                    data: [<?php if(!empty($trend_hafalan)) foreach($trend_hafalan as $t) echo $t['nilai'] . ","; ?>],
+                    borderColor: '#1a5fb4',
+                    backgroundColor: 'rgba(26, 95, 180, 0.08)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#1a5fb4',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#1a5fb4'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: { beginAtZero: true, max: 10, ticks: { stepSize: 1, precision: 0 }, grid: { color: '#e2e8f0' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: (ctx) => `Nilai: ${ctx.raw} / 9` } }
+                }
             }
         });
     </script>

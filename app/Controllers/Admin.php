@@ -416,11 +416,15 @@ class Admin extends BaseController
     {
         $santri = $this->santriModel->getSantriWithDetails();
         $ortuList = $this->userModel->where('role', 'ortu')->findAll();
+        $kelasList = $this->kelasModel->findAll();
+        $ustadzList = $this->userModel->where('role', 'ustadz')->findAll();
         
         $data = [
             'judul' => 'Data Santri',
             'santri' => $santri,
             'ortuList' => $ortuList,
+            'kelasList' => $kelasList,
+            'ustadzList' => $ustadzList,
         ];
         return view('admin/santri', $data);
     }
@@ -445,7 +449,9 @@ class Admin extends BaseController
             'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'alamat' => $this->request->getPost('alamat'),
-            'id_ortu' => $this->request->getPost('id_ortu'),
+            'id_ortu' => $this->request->getPost('id_ortu') ?: null,
+            'id_kelas' => $this->request->getPost('id_kelas') ?: null,
+            'id_ustadz' => $this->request->getPost('id_ustadz') ?: null,
             'status' => 'aktif'
         ]);
 
@@ -512,7 +518,9 @@ class Admin extends BaseController
             'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'alamat' => $this->request->getPost('alamat'),
-            'id_ortu' => $this->request->getPost('id_ortu'),
+            'id_ortu' => $this->request->getPost('id_ortu') ?: null,
+            'id_kelas' => $this->request->getPost('id_kelas') ?: null,
+            'id_ustadz' => $this->request->getPost('id_ustadz') ?: null,
             'status' => $this->request->getPost('status')
         ]);
 
@@ -680,7 +688,7 @@ class Admin extends BaseController
 
     public function kelas()
     {
-        $kelas = $this->kelasModel->getKelasWithWali();
+        $kelas = $this->kelasModel->orderBy('nama_kelas', 'ASC')->findAll();
         
         // Enhance with multiple teachers list
         foreach ($kelas as &$k) {
@@ -744,7 +752,6 @@ class Admin extends BaseController
         $id_kelas = $this->kelasModel->insert([
             'nama_kelas' => $this->request->getPost('nama_kelas'),
             'deskripsi'  => $this->request->getPost('deskripsi'),
-            'id_ustadz'  => $this->request->getPost('id_ustadz') ?: null
         ]);
 
         // 2. Save Multiple Teachers
@@ -781,7 +788,6 @@ class Admin extends BaseController
         $this->kelasModel->update($id, [
             'nama_kelas' => $this->request->getPost('nama_kelas'),
             'deskripsi'  => $this->request->getPost('deskripsi'),
-            'id_ustadz'  => $this->request->getPost('id_ustadz') ?: null
         ]);
 
         // 2. Update Multiple Teachers (Sync)

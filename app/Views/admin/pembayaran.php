@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $judul ?> - PTQ Al-Hikmah</title>
+    <title><?= $judul ?> - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* VARIABLES & RESET */
         :root {
             --primary: #1a5fb4; --primary-dark: #1c3d78; --secondary: #26a269;
             --accent: #e5a50a; --light: #f8f9fa; --dark: #2d3748;
@@ -26,7 +27,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -66,7 +67,7 @@
         .menu-item { margin-bottom: 5px; }
         .menu-item a { display: flex; align-items: center; padding: 14px 15px; border-radius: var(--radius); transition: var(--transition); }
         .menu-item a:hover, .menu-item.active a { background: rgba(255, 255, 255, 0.1); transform: translateX(5px); }
-        .menu-item i { margin-right: 12px; width: 20px; text-align: center; }
+        .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
         
@@ -76,19 +77,26 @@
         .page-icon { width: 48px; height: 48px; border-radius: 12px; background: white; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: var(--shadow); }
         .page-title-group h1 { font-size: 1.6rem; color: var(--primary-dark); font-weight: 800; }
         
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .header-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .filter-select { padding: 10px 16px; border-radius: var(--radius); border: 1px solid var(--light-gray); background: white; font-weight: 600; color: var(--dark); outline: none; cursor: pointer; }
         
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: var(--transition); border: none; }
         .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; box-shadow: 0 4px 15px rgba(26, 95, 180, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 95, 180, 0.4); }
+        .btn-secondary { background: var(--secondary); color: white; box-shadow: 0 4px 15px rgba(38, 162, 105, 0.3); }
+        .btn-secondary:hover { transform: translateY(-2px); background: #1e8555; }
 
-        /* STAT CARDS - FIXED 4 COLUMNS */
+        /* SECTION CARD */
+        .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+
+        /* STATS GRID - 4 COLUMNS */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             gap: 20px; 
-            margin-bottom: 30px; 
+            margin-bottom: 25px; 
         }
         
         .stat-card { 
@@ -145,18 +153,57 @@
         .card-orange { background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%); }
         .card-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
 
-        /* MAIN CONTENT AREA */
-        .premium-card { background: white; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--light-gray); }
-        .premium-card-header { padding: 24px; border-bottom: 1px solid var(--light-gray); display: flex; align-items: center; gap: 12px; }
-        .premium-card-header h2 { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
-        .premium-card-header i { color: var(--primary); font-size: 1.2rem; }
-
         /* TABLE STYLES */
         .table-responsive { width: 100%; overflow-x: auto; }
-        .custom-table { width: 100%; border-collapse: collapse; }
-        .custom-table th { background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; color: var(--gray); border-bottom: 2px solid var(--light-gray); }
-        .custom-table td { padding: 18px 24px; border-bottom: 1px solid var(--light-gray); vertical-align: middle; }
-        .custom-table tr:hover { background: #f1f5f9; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; color: var(--gray); border-bottom: 2px solid var(--light-gray); }
+        .table td { padding: 18px 24px; border-bottom: 1px solid var(--light-gray); vertical-align: middle; }
+        .table tr:hover { background: #f1f5f9; }
+        .table tr:last-child td { border-bottom: none; }
+
+        .student-nis { font-size: 0.85rem; color: var(--gray); font-family: 'Courier New', Courier, monospace; }
+        .student-name { font-weight: 700; color: var(--dark); font-size: 1rem; }
+        
+        .status-overall { font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .paid-status { color: var(--success); }
+        .paid-dot { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        .unpaid-status { color: var(--danger); }
+        .unpaid-dot { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+
+        .action-btn { background: var(--primary); color: white; border: none; border-radius: var(--radius); padding: 8px 16px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); }
+        .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(26, 95, 180, 0.2); }
+        .action-btn i { font-size: 0.9rem; }
+
+        /* BADGES */
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: .75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .badge-success { background: rgba(38,162,105,.1); color: var(--success); }
+        .badge-danger { background: rgba(229,62,62,.1); color: var(--danger); }
+        .badge-warning { background: rgba(221,107,32,.1); color: var(--warning); }
+        .badge-gray { background: rgba(113,128,150,.1); color: var(--gray); }
+
+        /* ALERTS */
+        .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
+        @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
+        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1000; display: none; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: #fff; width: 100%; max-width: 500px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,.3); animation: slideUp .3s ease; overflow: hidden; }
+        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); background: var(--light); }
+        .modal-head h3 { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        .btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray); padding: 5px; border-radius: 5px; transition: var(--transition); }
+        .btn-close:hover { background: var(--light-gray); color: var(--danger); }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 0.85rem; color: var(--dark); }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--light-gray); outline: none; transition: var(--transition); font-size: 0.9rem; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,95,180,0.1); }
 
         /* MOBILE CARD STYLES */
         .santri-cards-container {
@@ -180,36 +227,20 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
         
-        .card-header {
+        .santri-card .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 2px solid var(--light-gray);
+            padding: 0 0 12px 0;
         }
         
-        .card-header-left {
-            flex: 1;
-        }
-        
-        .card-nis {
-            font-size: 0.75rem;
-            color: var(--gray);
-            font-family: monospace;
-            margin-bottom: 4px;
-        }
-        
-        .card-name {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--primary-dark);
-        }
-        
-        .card-body {
-            margin-bottom: 16px;
-        }
-        
+        .card-header-left { flex: 1; }
+        .card-nis { font-size: 0.75rem; color: var(--gray); font-family: monospace; margin-bottom: 4px; }
+        .card-name { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); }
+        .card-body { margin-bottom: 16px; }
         .card-info-row {
             display: flex;
             justify-content: space-between;
@@ -217,26 +248,9 @@
             padding: 10px 0;
             border-bottom: 1px solid var(--light-gray);
         }
-        
-        .card-info-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .card-info-value {
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        
-        .card-footer {
-            margin-top: 12px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        
+        .card-info-label { font-size: 0.8rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-info-value { font-weight: 700; font-size: 0.9rem; }
+        .card-footer { margin-top: 12px; display: flex; justify-content: flex-end; }
         .card-action-btn {
             background: var(--primary);
             color: white;
@@ -253,60 +267,14 @@
             width: 100%;
             justify-content: center;
         }
-        
-        .card-action-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
+        .card-action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        .student-nis { font-size: 0.85rem; color: var(--gray); font-family: 'Courier New', Courier, monospace; }
-        .student-name { font-weight: 700; color: var(--dark); font-size: 1rem; }
-        
-        .status-overall { font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .paid-status { color: var(--success); }
-        .paid-dot { background: var(--success); box-shadow: 0 0 10px var(--success); }
-        .unpaid-status { color: var(--danger); }
-        .unpaid-dot { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+        /* SIDEBAR OVERLAY */
+        .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
 
-        .action-btn { background: var(--primary); color: white; border: none; border-radius: var(--radius); padding: 8px 16px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition); }
-        .action-btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(26, 95, 180, 0.2); }
-        .action-btn i { font-size: 0.9rem; }
-
-        /* ALERTS */
-        .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
-        @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
-        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
-
-        /* MODAL */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1000; display: none; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: #fff; width: 100%; max-width: 800px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,.3); animation: slideUp .3s ease; overflow: hidden; }
-        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid var(--light-gray); background: var(--light); }
-        .modal-head h3 { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
-        .btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray); padding: 5px; border-radius: 5px; transition: var(--transition); }
-        .btn-close:hover { background: var(--light-gray); color: var(--danger); }
-        .modal-body { padding: 24px; }
-
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--light-gray); }
-        .history-item:last-child { border-bottom: none; }
-        .history-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--dark); }
-        .history-info p { font-size: 0.8rem; color: var(--gray); }
-        .history-amount { text-align: right; }
-        .history-amount .price { font-weight: 800; font-size: 1rem; color: var(--primary); }
-        
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .badge-lunas { background: rgba(38,162,105,0.1); color: var(--success); }
-        .badge-pending { background: rgba(221,107,32,0.1); color: var(--warning); }
-
-        /* RESPONSIVE BREAKPOINTS */
+        /* RESPONSIVE */
         @media (max-width: 1200px) {
-            .stats-grid { 
-                grid-template-columns: repeat(4, 1fr); 
-                gap: 15px;
-            }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; }
             .stat-value { font-size: 1.2rem; }
             .stat-label { font-size: 0.65rem; }
             .stat-card { padding: 15px; }
@@ -317,34 +285,30 @@
             .dashboard-container { position: relative; }
             .sidebar { position: absolute; left: -280px; height: 100%; border-right: none; z-index: 1000; }
             .sidebar.active { left: 0; }
+            .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
-            .stats-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 15px;
-            }
+            .user-info { padding: 8px; background: transparent; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
         }
 
         @media (max-width: 768px) {
+            .dashboard-content { padding: 20px 15px; }
             .page-header { flex-direction: column; align-items: flex-start; }
             .header-actions { width: 100%; justify-content: space-between; }
-            .stats-grid { 
-                grid-template-columns: 1fr; 
-                gap: 12px;
-            }
+            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
             
-            /* Hide table on mobile */
-            .table-responsive {
-                display: none;
-            }
+            .table-responsive { display: none; }
+            .santri-cards-container { display: flex; }
             
-            /* Show cards on mobile */
-            .santri-cards-container {
-                display: flex;
-            }
+            .table thead { display: none; }
+            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+            .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+            .table td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); text-align: right; }
+            .table td:last-child { border-bottom: none; }
+            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; float: left; text-align: left; }
         }
 
         @media (max-width: 480px) {
-            .dashboard-content { padding: 15px; }
             .santri-card { padding: 16px; }
             .card-name { font-size: 1rem; }
         }
@@ -358,8 +322,8 @@
                 <div class="logo-section">
                     <button class="mobile-menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                     <a href="<?= base_url('admin/dashboard') ?>" class="logo">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -368,16 +332,16 @@
                     <div class="user-dropdown">
                         <div class="user-info" id="userDropdownToggle">
                             <div class="user-avatar">
-                                    <?php 
-                                        $nama = session()->get('nama_lengkap') ?? 'AD';
-                                        $words = explode(' ', $nama);
-                                        $initials = '';
-                                        foreach($words as $word) {
-                                            $initials .= strtoupper(substr($word, 0, 1));
-                                            if(strlen($initials) >= 2) break;
-                                        }
-                                        echo $initials ?: 'AD';
-                                    ?>
+                                <?php 
+                                    $nama = session()->get('nama_lengkap') ?? 'AD';
+                                    $words = explode(' ', $nama);
+                                    $initials = '';
+                                    foreach($words as $word) {
+                                        $initials .= strtoupper(substr($word, 0, 1));
+                                        if(strlen($initials) >= 2) break;
+                                    }
+                                    echo $initials ?: 'AD';
+                                ?>
                             </div>
                             <div class="user-details">
                                 <div class="user-name"><?= htmlspecialchars(session()->get('nama_lengkap') ?? 'Administrator') ?></div>
@@ -397,6 +361,8 @@
     </header>
 
     <div class="dashboard-container">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="welcome-text">Selamat Datang,</div>
@@ -426,9 +392,8 @@
                         <option value="lunas">Lunas</option>
                         <option value="tunggakan">Ada Tunggakan</option>
                     </select>
-                   
-                    <button class="btn btn-primary" style="background:var(--secondary);" onclick="document.getElementById('addModal').classList.add('active')">
-                        <i class="fas fa-plus"></i> Buat Tagihan Mingguan
+                    <button class="btn btn-secondary" onclick="document.getElementById('addModal').classList.add('active')">
+                        <i class="fas fa-plus"></i> Buat Tagihan
                     </button>
                 </div>
             </div>
@@ -441,55 +406,48 @@
                 <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
             <?php endif; ?>
 
-            <!-- STATS GRID - 4 CARDS IN ONE ROW -->
+            <!-- STATS GRID -->
             <div class="stats-grid">
                 <div class="stat-card card-green">
                     <i class="fas fa-money-bill-trend-up bg-icon"></i>
                     <div class="stat-label"><i class="fas fa-circle-check"></i> Total Kas Masuk</div>
                     <div class="stat-value">Rp <?= number_format($stats['masuk'] ?? 0, 0, ',', '.') ?></div>
-                    <div class="stat-footer">
-                        <span>Pembayaran Lunas</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
+                    <div class="stat-footer"><span>Pembayaran Lunas</span><i class="fas fa-chevron-right"></i></div>
                 </div>
                 <div class="stat-card card-red">
                     <i class="fas fa-hand-holding-dollar bg-icon"></i>
                     <div class="stat-label"><i class="fas fa-circle-exclamation"></i> Total Tunggakan</div>
                     <div class="stat-value">Rp <?= number_format($stats['tunggakan'] ?? 0, 0, ',', '.') ?></div>
-                    <div class="stat-footer">
-                        <span>Belum Dibayar</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
+                    <div class="stat-footer"><span>Belum Dibayar</span><i class="fas fa-chevron-right"></i></div>
                 </div>
                 <div class="stat-card card-orange">
                     <i class="fas fa-hourglass-half bg-icon"></i>
                     <div class="stat-label"><i class="fas fa-clock-rotate-left"></i> Validasi Tertunda</div>
                     <div class="stat-value"><?= number_format($stats['pending'] ?? 0) ?></div>
-                    <div class="stat-footer">
-                        <span>Butuh Persetujuan</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
+                    <div class="stat-footer"><span>Butuh Persetujuan</span><i class="fas fa-chevron-right"></i></div>
                 </div>
                 <div class="stat-card card-purple">
                     <i class="fas fa-file-invoice-dollar bg-icon"></i>
                     <div class="stat-label"><i class="fas fa-layer-group"></i> Total Ditagihkan</div>
                     <div class="stat-value">Rp <?= number_format($stats['total'] ?? 0, 0, ',', '.') ?></div>
-                    <div class="stat-footer">
-                        <span>Seluruh Tagihan SPP</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
+                    <div class="stat-footer"><span>Seluruh Tagihan</span><i class="fas fa-chevron-right"></i></div>
                 </div>
             </div>
 
-            <div class="premium-card">
-                <div class="premium-card-header">
-                    <i class="fas fa-list-check"></i>
-                    <h2>Daftar Tagihan Per Santri</h2>
+            <!-- SECTION CARD -->
+            <div class="section-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-list-check"></i>
+                        </div>
+                        Daftar Tagihan Per Santri
+                    </div>
                 </div>
                 
                 <!-- TABLE VIEW (Desktop) -->
                 <div class="table-responsive">
-                    <table class="custom-table" id="santriTable">
+                    <table class="table" id="santriTable">
                         <thead>
                             <tr>
                                 <th>NIS</th>
@@ -502,34 +460,26 @@
                             <?php if(!empty($santriOverview)): ?>
                                 <?php foreach($santriOverview as $s): ?>
                                     <tr data-status="<?= ($s['total_bill'] ?? 0) == 0 ? 'none' : (($s['unpaid_bill'] ?? 0) == 0 ? 'lunas' : 'tunggakan') ?>">
-                                        <td><span class="student-nis"><?= htmlspecialchars($s['nis'] ?? '-') ?></span></td>
-                                        <td><div class="student-name"><?= htmlspecialchars($s['nama_santri']) ?></div></td>
-                                        <td>
+                                        <td data-label="NIS"><span class="student-nis"><?= htmlspecialchars($s['nis'] ?? '-') ?></span></td>
+                                        <td data-label="Nama Santri"><div class="student-name"><?= htmlspecialchars($s['nama_santri']) ?></div></td>
+                                        <td data-label="Status Keseluruhan">
                                             <?php if(($s['total_bill'] ?? 0) == 0): ?>
-                                                <div class="status-overall" style="color:var(--gray);">
-                                                    <span class="status-dot" style="background:var(--gray);"></span> Belum Ada Tagihan
-                                                </div>
+                                                <span class="badge badge-gray"><i class="fas fa-minus-circle"></i> Belum Ada Tagihan</span>
                                             <?php elseif(($s['unpaid_bill'] ?? 0) == 0): ?>
-                                                <div class="status-overall paid-status">
-                                                    <span class="status-dot paid-dot"></span> Lunas (<?= $s['paid_bill'] ?? 0 ?> Tagihan)
-                                                </div>
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Lunas (<?= $s['paid_bill'] ?? 0 ?> Tagihan)</span>
                                             <?php else: ?>
-                                                <div class="status-overall unpaid-status">
-                                                    <span class="status-dot unpaid-dot"></span> Belum Bayar (<?= $s['unpaid_bill'] ?? 0 ?> Minggu)
-                                                </div>
+                                                <span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> Tunggakan (<?= $s['unpaid_bill'] ?? 0 ?> Minggu)</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
+                                        <td data-label="Aksi">
                                             <a href="<?= base_url('admin/pembayaran/detail/' . $s['id']) ?>" class="action-btn">
-                                                <i class="fas fa-list"></i> <span>Lihat Detail</span>
+                                                <i class="fas fa-eye"></i> Detail
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <tr>
-                                    <td colspan="4" style="text-align:center; padding:50px; color:var(--gray);">Data santri tidak ditemukan.</td>
-                                </tr>
+                                <tr><td colspan="4" style="text-align:center; padding:50px; color:var(--gray);">Data santri tidak ditemukan.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -551,18 +501,18 @@
                                         <span class="card-info-label">Status Keseluruhan</span>
                                         <span class="card-info-value">
                                             <?php if(($s['total_bill'] ?? 0) == 0): ?>
-                                                <span style="color:var(--gray);">Belum Ada Tagihan</span>
+                                                <span class="badge badge-gray">Belum Ada Tagihan</span>
                                             <?php elseif(($s['unpaid_bill'] ?? 0) == 0): ?>
-                                                <span style="color:var(--success);">✓ Lunas (<?= $s['paid_bill'] ?? 0 ?> Tagihan)</span>
+                                                <span class="badge badge-success">✓ Lunas (<?= $s['paid_bill'] ?? 0 ?> Tagihan)</span>
                                             <?php else: ?>
-                                                <span style="color:var(--danger);">⚠ Belum Bayar (<?= $s['unpaid_bill'] ?? 0 ?> Minggu)</span>
+                                                <span class="badge badge-danger">⚠ Tunggakan (<?= $s['unpaid_bill'] ?? 0 ?> Minggu)</span>
                                             <?php endif; ?>
                                         </span>
                                     </div>
                                 </div>
                                 <div class="card-footer">
                                     <a href="<?= base_url('admin/pembayaran/detail/' . $s['id']) ?>" class="card-action-btn">
-                                        <i class="fas fa-list"></i> Lihat Detail Tagihan
+                                        <i class="fas fa-eye"></i> Lihat Detail Tagihan
                                     </a>
                                 </div>
                             </div>
@@ -572,44 +522,66 @@
                     <?php endif; ?>
                 </div>
             </div>
+
+            <!-- INFORMASI SECTION -->
+            <div class="section-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(14,165,233,.1);color:var(--info);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        Informasi Keuangan
+                    </div>
+                </div>
+                <div style="padding: 20px 24px;">
+                    <ul style="margin-left: 20px;">
+                        <li>• <strong>Status Lunas</strong> - Santri yang telah membayar seluruh tagihan yang ditagihkan.</li>
+                        <li>• <strong style="color:var(--danger);">Status Tunggakan</strong> - Santri yang memiliki tagihan belum dibayar.</li>
+                        <li>• <strong>Klik Detail</strong> - Untuk melihat rincian tagihan per minggu dan melakukan verifikasi pembayaran.</li>
+                    </ul>
+                    <p style="margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--light-gray); font-size: 0.85rem; color: var(--gray);">
+                        <i class="fas fa-shield-alt"></i> Sistem pembayaran menggunakan metode tagihan mingguan.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- MODAL TAMBAH TAGIHAN -->
     <div class="modal-overlay" id="addModal">
-        <form action="<?= base_url('admin/pembayaran/store') ?>" method="post" class="modal-card" style="max-width:500px;">
+        <form action="<?= base_url('admin/pembayaran/store') ?>" method="post" class="modal-card">
             <?= csrf_field() ?>
             <div class="modal-head">
                 <h3><i class="fas fa-plus-circle"></i> Buat Tagihan Baru</h3>
                 <button type="button" class="btn-close" onclick="document.getElementById('addModal').classList.remove('active')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; font-weight:700; margin-bottom:5px;">Pilih Santri</label>
-                    <select name="id_santri" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--light-gray);" required>
+                <div class="form-group">
+                    <label><i class="fas fa-user-graduate"></i> Pilih Santri</label>
+                    <select name="id_santri" required>
                         <option value="">-- Pilih Santri --</option>
                         <?php foreach($santriList ?? [] as $sl): ?>
                             <option value="<?= $sl['id'] ?>"><?= htmlspecialchars($sl['nama_santri']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; font-weight:700; margin-bottom:5px;">Jenis Tagihan</label>
-                    <input type="text" name="jenis_pembayaran" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--light-gray);" required placeholder="Contoh: SPP Minggu ke-2 Agustus">
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Jenis Tagihan</label>
+                    <input type="text" name="jenis_pembayaran" required placeholder="Contoh: SPP Minggu ke-2 Agustus">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; font-weight:700; margin-bottom:5px;">Nominal (Rp)</label>
-                    <input type="number" name="jumlah" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--light-gray);" required>
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill"></i> Nominal (Rp)</label>
+                    <input type="number" name="jumlah" required placeholder="Masukkan nominal">
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display:block; font-weight:700; margin-bottom:5px;">Status</label>
-                    <select name="status" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--light-gray);" required>
-                        <option value="Pending">Pending</option>
-                        <option value="Lunas">Lunas</option>
+                <div class="form-group">
+                    <label><i class="fas fa-flag-checkered"></i> Status</label>
+                    <select name="status" required>
+                        <option value="Pending">Pending (Menunggu Pembayaran)</option>
+                        <option value="Lunas">Lunas (Sudah Dibayar)</option>
                     </select>
                 </div>
             </div>
-            <div style="padding: 24px; border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 10px;">
+            <div class="modal-footer">
                 <button type="button" class="btn" onclick="document.getElementById('addModal').classList.remove('active')" style="background:var(--light-gray);">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan Tagihan</button>
             </div>
@@ -620,11 +592,22 @@
         // Sidebar & UI Logic
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         const userDropdownToggle = document.getElementById('userDropdownToggle');
         const userDropdown = document.getElementById('userDropdown');
 
         if(menuToggle) {
-            menuToggle.onclick = () => sidebar.classList.toggle('active');
+            menuToggle.onclick = () => {
+                sidebar.classList.toggle('active');
+                if(sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            }
+        }
+        
+        if(sidebarOverlay) {
+            sidebarOverlay.onclick = () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
         }
         
         if(userDropdownToggle) {
@@ -638,7 +621,16 @@
             if(userDropdown) userDropdown.classList.remove('active');
         }
 
-        // Filter functionality for both table and cards
+        // Auto hide alerts after 5 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.4s';
+                setTimeout(() => alert.remove(), 400);
+            }, 5000);
+        });
+
+        // Filter functionality
         const statusFilter = document.getElementById('statusFilter');
         const tableRows = document.querySelectorAll('#santriTableBody tr');
         const cardElements = document.querySelectorAll('.santri-card');
@@ -647,7 +639,6 @@
             statusFilter.addEventListener('change', function() {
                 const filterValue = this.value;
                 
-                // Filter table rows
                 tableRows.forEach(row => {
                     if(filterValue === 'all') {
                         row.style.display = '';
@@ -661,7 +652,6 @@
                     }
                 });
                 
-                // Filter card elements
                 cardElements.forEach(card => {
                     if(filterValue === 'all') {
                         card.style.display = '';

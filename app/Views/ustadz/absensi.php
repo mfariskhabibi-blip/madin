@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Santri - PTQ Al-Hikmah</title>
+    <title>Absensi Santri - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* VARIABLES & RESET (From Uniform Dashboard) */
+        /* VARIABLES & RESET - Consistent with All Pages */
         :root {
             --primary: #1a5fb4; --primary-dark: #1c3d78; --secondary: #26a269;
-            --accent: #e5a50a; --light: #f8f9fa; --dark: #2d3748;
-            --gray: #718096; --light-gray: #e2e8f0; --danger: #e53e3e;
+            --accent: #e5a50a; --light: #f8f9fa; --gray: #718096;
+            --light-gray: #e2e8f0; --dark: #2d3748; --danger: #e53e3e;
             --success: #38a169; --warning: #dd6b20; --info: #0ea5e9;
-            --purple: #8b5cf6; --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --purple: #8b5cf6; --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --radius: 8px; --transition: all 0.3s ease;
         }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f5f7fa; color: var(--dark); line-height: 1.6; overflow-x: hidden; }
+        body { background-color: #f5f7fa; color: var(--dark); overflow-x: hidden; line-height: 1.6; }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
         .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
@@ -27,11 +26,11 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
-        .mobile-menu-toggle { display: none; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.4rem; width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; transition: var(--transition); align-items: center; justify-content: center; }
+        .mobile-menu-toggle { display: none; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.4rem; width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; align-items: center; justify-content: center; transition: var(--transition); }
         .mobile-menu-toggle:hover { background: rgba(255, 255, 255, 0.25); }
         
         .user-section { display: flex; align-items: center; gap: 15px; }
@@ -51,7 +50,7 @@
         .dropdown-item i { width: 20px; text-align: center; color: var(--gray); }
         .dropdown-item:hover i { color: var(--primary); }
         .logout-btn { color: var(--danger); }
-        .logout-btn:hover { background: rgba(229, 62, 62, 0.1); }
+        .logout-btn:hover { background: rgba(229, 62, 62, 0.1); color: var(--danger); }
         
         .notification-bell { position: relative; background: rgba(255, 255, 255, 0.15); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: var(--transition); }
         .notification-bell:hover { background: rgba(255, 255, 255, 0.25); }
@@ -70,79 +69,140 @@
         .menu-item i { margin-right: 12px; width: 20px; text-align: center; font-size: 1.1rem; }
         
         .dashboard-content { flex: 1; padding: 30px; background-color: #f5f7fa; overflow-y: auto; transition: var(--transition); }
-        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .page-title { font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .page-subtitle { color: var(--gray); font-size: 0.9rem; margin-bottom: 25px; }
         
-        /* PAGE SPECIFIC STYLES */
+        /* SECTION CARD */
         .section-card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
-        .card-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); gap: 15px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--light-gray); flex-wrap: wrap; gap: 10px; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
-
-        .date-filter { background: var(--light); padding: 15px 24px; border-bottom: 1px solid var(--light-gray); display: flex; align-items: center; gap: 15px; }
-        .date-filter form { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .form-control { padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: .9rem; color: var(--dark); outline: none; transition: .2s; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,95,180,.15); }
         
-        .btn { display: inline-flex; justify-content:center; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: .9rem; cursor: pointer; transition: .2s; border: none; }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-outline { background: transparent; border: 1px solid var(--light-gray); color: var(--dark); }
-        .btn-outline:hover { background: var(--light); }
-
-        .table-responsive { overflow-x: auto; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th { text-align: left; padding: 12px 24px; background: var(--light); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); font-weight: 700; border-bottom: 1px solid var(--light-gray); }
-        .table td { padding: 14px 24px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
-        .table tr:last-child td { border-bottom: none; }
-        .table tr:hover { background: #f8fafc; }
-
-        .santri-name { font-weight: 600; color: var(--dark); font-size: .95rem; }
-        .santri-kelas { font-size: .75rem; color: var(--gray); }
-
-        /* ABSENSI RADIOS PUSH-BUTTON STYLE */
-        .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .radio-btn { position: relative; }
-        .radio-btn input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        .radio-label { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: .8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--light-gray); background: var(--light); color: var(--gray); transition: .2s; user-select: none; }
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        .stat-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--light-gray); display: flex; align-items: center; gap: 16px; transition: var(--transition); box-shadow: var(--shadow); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .stat-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .stat-info h3 { font-size: 0.75rem; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .stat-info p { font-size: 1.6rem; font-weight: 800; color: var(--dark); line-height: 1.2; }
         
-        .radio-btn input:checked ~ .label-hadir { background: var(--success); border-color: var(--success); color: white; }
-        .radio-btn input:checked ~ .label-izin { background: var(--warning); border-color: var(--warning); color: white; }
-        .radio-btn input:checked ~ .label-sakit { background: var(--info); border-color: var(--info); color: white; }
-        .radio-btn input:checked ~ .label-alpa { background: var(--danger); border-color: var(--danger); color: white; }
-
-        .input-keterangan { width: 100%; min-width: 150px; padding: 8px 12px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: .85rem; }
-        .input-keterangan:focus { border-color: var(--primary); outline: none; }
-
+        .bg-hadir { background: #ecfdf5; color: var(--success); }
+        .bg-izin { background: #fffbeb; color: var(--warning); }
+        .bg-sakit { background: #f0f9ff; color: var(--info); }
+        .bg-alpa { background: #fef2f2; color: var(--danger); }
+        .bg-total { background: #f5f3ff; color: var(--purple); }
+        
+        /* DATE NAVIGATOR */
+        .date-navigator { background: white; padding: 16px 24px; border-radius: var(--radius); border: 1px solid var(--light-gray); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; box-shadow: var(--shadow); }
+        .date-controls { display: flex; align-items: center; gap: 12px; }
+        .date-input-group { display: flex; align-items: center; }
+        .form-control { padding: 10px 16px; border: 1.5px solid var(--light-gray); border-radius: var(--radius); font-size: 0.9rem; font-weight: 500; outline: none; transition: var(--transition); background: white; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.1); }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: var(--transition); border: none; white-space: nowrap; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(26, 95, 180, 0.25); transform: translateY(-1px); }
+        .btn-ghost { background: var(--light); color: var(--dark); border: 1px solid var(--light-gray); }
+        .btn-ghost:hover { background: var(--light-gray); border-color: var(--gray); }
+        .btn-sm { padding: 8px 14px; font-size: 0.8rem; }
+        
+        .quick-nav { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        /* TABLE CARD */
+        .table-card { background: white; border-radius: var(--radius); border: 1px solid var(--light-gray); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .table-header { padding: 20px 24px; border-bottom: 1px solid var(--light-gray); display: flex; justify-content: space-between; align-items: center; background: #fafafa; flex-wrap: wrap; gap: 12px; }
+        .table-header h2 { font-size: 1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        .badge-count { background: var(--primary); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .absensi-table { width: 100%; border-collapse: collapse; }
+        .absensi-table th { background: white; padding: 16px 20px; text-align: left; font-size: 0.7rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid var(--light-gray); }
+        .absensi-table td { padding: 18px 20px; border-bottom: 1px solid var(--light-gray); vertical-align: middle; }
+        .absensi-table tr:last-child td { border-bottom: none; }
+        .absensi-table tr:hover { background-color: #fafcff; }
+        
+        /* STUDENT PROFILE */
+        .student-profile { display: flex; align-items: center; gap: 14px; }
+        .student-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+        .student-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+        .student-info p { font-size: 0.75rem; color: var(--gray); display: flex; align-items: center; gap: 6px; }
+        
+        /* STATUS OPTIONS */
+        .status-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .status-radio { position: relative; cursor: pointer; }
+        .status-radio input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .status-label { display: flex; align-items: center; justify-content: center; min-width: 65px; padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; border: 1.5px solid var(--light-gray); background: white; color: var(--gray); transition: var(--transition); user-select: none; }
+        .status-label i { margin-right: 6px; font-size: 0.7rem; }
+        
+        .status-radio input:checked + .lbl-hadir { background: var(--success); border-color: var(--success); color: white; }
+        .status-radio input:checked + .lbl-izin { background: var(--warning); border-color: var(--warning); color: white; }
+        .status-radio input:checked + .lbl-sakit { background: var(--info); border-color: var(--info); color: white; }
+        .status-radio input:checked + .lbl-alpa { background: var(--danger); border-color: var(--danger); color: white; }
+        
+        .recorded-by { margin-top: 8px; font-size: 0.65rem; color: var(--gray); display: flex; align-items: center; gap: 5px; }
+        .recorded-by i { color: var(--success); font-size: 0.6rem; }
+        
+        .note-input { width: 100%; min-width: 180px; border: 1.5px solid var(--light-gray); border-radius: var(--radius); padding: 10px 14px; font-size: 0.85rem; outline: none; transition: var(--transition); background: white; }
+        .note-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.08); }
+        
+        /* FORM ACTIONS */
+        .absensi-actions { padding: 20px 24px; background: #fafafa; border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+        
+        /* ALERTS */
         .alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: .875rem; animation: fadeInDown .4s; }
         @keyframes fadeInDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
-        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); }
-        .alert-danger  { background: rgba(229,62,62,.1);  color: #c53030; border: 1px solid rgba(229,62,62,.2); }
-
-        .form-footer { padding: 20px 24px; background: var(--light); border-top: 1px solid var(--light-gray); display: flex; justify-content: flex-end; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
-
-        .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
+        .alert-success { background: rgba(38,162,105,.1); color: #1e8555; border: 1px solid rgba(38,162,105,.2); border-left: 4px solid var(--success); }
+        .alert-error { background: rgba(229,62,62,.1); color: #c53030; border: 1px solid rgba(229,62,62,.2); border-left: 4px solid var(--danger); }
         
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+        .modal-content { background: white; margin: auto; border-radius: var(--radius); width: 90%; max-width: 450px; box-shadow: 0 20px 35px rgba(0,0,0,0.2); overflow: hidden; animation: modalSlideIn 0.3s ease; }
+        @keyframes modalSlideIn { from { transform: scale(0.95) translateY(-20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--light-gray); display: flex; justify-content: space-between; align-items: center; background: white; }
+        .modal-header h3 { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .modal-body { padding: 20px 24px; max-height: 400px; overflow-y: auto; }
+        .present-list { list-style: none; }
+        .present-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--light-gray); }
+        .present-item:last-child { border-bottom: none; }
+        .present-item .avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .empty-state i { font-size: 4rem; color: var(--light-gray); margin-bottom: 20px; }
+        .empty-state h3 { font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; font-weight: 600; }
+        .empty-state p { font-size: 0.9rem; color: var(--gray); }
+        
+        .sidebar-overlay { display: none; position: fixed; top: 68px; left: 0; width: 100%; height: calc(100vh - 68px); background: rgba(0, 0, 0, 0.5); z-index: 98; opacity: 0; transition: var(--transition); }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+        
+        /* RESPONSIVE */
         @media (max-width: 992px) {
             .mobile-menu-toggle { display: flex; }
             .dashboard-container { position: relative; }
-            .sidebar { position: absolute; left: -280px; height: 100%; box-shadow: none; }
+            .sidebar { position: absolute; left: -280px; height: 100%; }
             .sidebar.active { left: 0; box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2); }
             .sidebar-overlay.active { display: block; opacity: 1; }
             .user-name, .user-role { display: none; }
-            .user-info { padding: 5px; background: transparent; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
         }
-        
-        /* TABLE CARDS ON MOBILE */
         @media (max-width: 768px) {
             .page-title { font-size: 1.5rem; }
             .dashboard-content { padding: 20px 15px; }
-            .table thead { display: none; }
-            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
-            .table tr { margin-bottom: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--light-gray); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
-            .table td { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px dashed var(--light-gray); }
-            .table td:last-child { border-bottom: none; }
-            .table td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: .75rem; text-transform: uppercase; margin-bottom: 8px; }
-            .form-footer { position: fixed; bottom: 0; left: 0; width: 100%; justify-content: stretch; }
-            .form-footer .btn { width: 100%; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .absensi-table thead { display: none; }
+            .absensi-table tr { display: block; margin-bottom: 16px; border: 1px solid var(--light-gray); border-radius: var(--radius); padding: 16px; background: white; }
+            .absensi-table td { display: block; padding: 8px 0; border: none; }
+            .absensi-table td::before { content: attr(data-label); font-weight: 700; font-size: 0.7rem; color: var(--gray); text-transform: uppercase; display: block; margin-bottom: 8px; }
+            .status-options { justify-content: flex-start; }
+            .note-input { width: 100%; }
+            .date-navigator { flex-direction: column; align-items: stretch; }
+            .date-controls { justify-content: center; }
+            .quick-nav { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 12px; }
+            .stat-icon { width: 40px; height: 40px; font-size: 1rem; }
+            .stat-info p { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -157,8 +217,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('ustadz/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -223,153 +283,315 @@
                 <div class="menu-item"><a href="<?= base_url('ustadz/progres-kelas') ?>"><i class="fas fa-chart-line"></i><span>Progres Kelas</span></a></div>
             </div>
         </div>
-        
-        <!-- CONTENT -->
+
+        <!-- MAIN CONTENT -->
         <div class="dashboard-content" id="mainContent">
-        <h1 class="page-title"><i class="fas fa-calendar-check"></i> Absensi Santri</h1>
+            <h1 class="page-title"><i class="fas fa-calendar-check"></i> Manajemen Absensi</h1>
+            <p class="page-subtitle">Kelola kehadiran santri dan tinjau riwayat presensi harian</p>
 
-        <!-- ALERTS -->
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
-        <?php endif; ?>
+            <!-- MESSAGES -->
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?></div>
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?></div>
+            <?php endif; ?>
 
-        <div class="section-card">
-            <div class="date-filter">
-                <form action="<?= base_url('ustadz/absensi') ?>" method="get">
-                    <span style="font-weight:600;color:var(--dark);">Pilih Tanggal:</span>
-                    <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($tanggal) ?>" max="<?= date('Y-m-d') ?>" required>
-                    <button type="submit" class="btn btn-outline" style="padding: 8px 14px;"><i class="fas fa-search"></i> Tampilkan</button>
-                    <?php if($tanggal != date('Y-m-d')): ?>
-                        <a href="<?= base_url('ustadz/absensi') ?>" class="btn btn-outline" style="padding: 8px 14px;color:var(--primary);"><i class="fas fa-calendar-day"></i> Hari Ini</a>
-                    <?php endif; ?>
-                </form>
-            </div>
-
-            <form action="<?= base_url('ustadz/absensi/store') ?>" method="post">
-                <?= csrf_field() ?>
-                <input type="hidden" name="tanggal" value="<?= htmlspecialchars($tanggal) ?>">
-                
-                <div class="card-header">
-                    <div class="card-title">
-                        <div style="width:36px;height:36px;border-radius:8px;background:rgba(26,95,180,.1);color:var(--primary);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        Daftar Santri Bimbingan Anda
+            <!-- STATS CARDS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon bg-hadir"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-info">
+                        <h3>Hadir</h3>
+                        <p><?= $stats['Hadir'] ?? 0 ?></p>
                     </div>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nama Santri & Rombel</th>
-                                <th>Status Kehadiran</th>
-                                <th>Keterangan (Opsional)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if(!empty($santri)): ?>
-                                <?php foreach($santri as $s): ?>
-                                    <?php 
-                                        $rStatus = $riwayat[$s['id']]['status'] ?? 'Hadir'; // default Hadir
-                                        $rKet = $riwayat[$s['id']]['keterangan'] ?? '';
-                                    ?>
+                <div class="stat-card">
+                    <div class="stat-icon bg-izin"><i class="fas fa-envelope-open-text"></i></div>
+                    <div class="stat-info">
+                        <h3>Izin</h3>
+                        <p><?= $stats['Izin'] ?? 0 ?></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-sakit"><i class="fas fa-thermometer-half"></i></div>
+                    <div class="stat-info">
+                        <h3>Sakit</h3>
+                        <p><?= $stats['Sakit'] ?? 0 ?></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-alpa"><i class="fas fa-user-slash"></i></div>
+                    <div class="stat-info">
+                        <h3>Alpa</h3>
+                        <p><?= $stats['Alpa'] ?? 0 ?></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-total"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Santri</h3>
+                        <p><?= $stats['Total'] ?? 0 ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATE NAVIGATOR -->
+            <div class="date-navigator">
+                <div class="date-controls">
+                    <a href="<?= base_url('ustadz/absensi?tanggal=' . date('Y-m-d', strtotime($tanggal . ' -1 day'))) ?>" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-chevron-left"></i> Sebelumnya
+                    </a>
+                    
+                    <form action="<?= base_url('ustadz/absensi') ?>" method="get" class="date-input-group">
+                        <input type="date" name="tanggal" class="form-control" value="<?= $tanggal ?? date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" onchange="this.form.submit()">
+                    </form>
+
+                    <a href="<?= base_url('ustadz/absensi?tanggal=' . date('Y-m-d', strtotime($tanggal . ' +1 day'))) ?>" class="btn btn-ghost btn-sm" <?= ($tanggal ?? date('Y-m-d')) >= date('Y-m-d') ? 'disabled style="opacity:0.5;pointer-events:none;"' : '' ?>>
+                        Selanjutnya <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+
+                <div class="quick-nav">
+                    <?php if(($tanggal ?? date('Y-m-d')) != date('Y-m-d')): ?>
+                        <a href="<?= base_url('ustadz/absensi') ?>" class="btn btn-primary btn-sm">
+                            <i class="fas fa-calendar-day"></i> Hari Ini
+                        </a>
+                    <?php endif; ?>
+                    <button type="button" class="btn btn-ghost btn-sm" id="markAllHadir">
+                        <i class="fas fa-check-double"></i> Tandai Semua Hadir
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="showPresentList">
+                        <i class="fas fa-users"></i> Daftar Hadir
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORM START -->
+            <form action="<?= base_url('ustadz/absensi/store') ?>" method="post">
+                <?= csrf_field() ?>
+                <input type="hidden" name="tanggal" value="<?= $tanggal ?? date('Y-m-d') ?>">
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Presensi Santri Bimbingan</h2>
+                        <span class="badge-count"><?= $stats['Terisi'] ?? 0 ?> dari <?= $stats['Total'] ?? 0 ?> terisi</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="absensi-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%">Santri & Kelas</th>
+                                    <th style="width: 35%">Status Kehadiran</th>
+                                    <th style="width: 30%">Keterangan / Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if(!empty($santri) && count($santri) > 0): ?>
+                                    <?php foreach($santri as $s): ?>
+                                        <?php 
+                                            $r = $riwayat[$s['id']] ?? null;
+                                            $rStatus = $r['status'] ?? 'Hadir'; 
+                                            $rKet = $r['keterangan'] ?? '';
+                                            $rUstadz = $r['nama_ustadz'] ?? null;
+                                        ?>
+                                        <tr class="row-santri">
+                                            <td data-label="Santri">
+                                                <div class="student-profile">
+                                                    <div class="student-avatar">
+                                                        <?= strtoupper(substr($s['nama_santri'], 0, 1)) ?>
+                                                    </div>
+                                                    <div class="student-info">
+                                                        <h4><?= htmlspecialchars($s['nama_santri']) ?></h4>
+                                                        <p><i class="fas fa-school"></i> <?= htmlspecialchars($s['nama_kelas'] ?? 'Kelas belum ditentukan') ?></p>
+                                                    </div>
+                                                </div>
+                                              </td>
+                                            <td data-label="Status">
+                                                <div class="status-options">
+                                                    <label class="status-radio">
+                                                        <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Hadir" <?= $rStatus == 'Hadir' ? 'checked' : '' ?> class="radio-hadir">
+                                                        <span class="status-label lbl-hadir"><i class="fas fa-check"></i> Hadir</span>
+                                                    </label>
+                                                    <label class="status-radio">
+                                                        <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Izin" <?= $rStatus == 'Izin' ? 'checked' : '' ?>>
+                                                        <span class="status-label lbl-izin"><i class="fas fa-envelope"></i> Izin</span>
+                                                    </label>
+                                                    <label class="status-radio">
+                                                        <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Sakit" <?= $rStatus == 'Sakit' ? 'checked' : '' ?>>
+                                                        <span class="status-label lbl-sakit"><i class="fas fa-thermometer-half"></i> Sakit</span>
+                                                    </label>
+                                                    <label class="status-radio">
+                                                        <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Alpa" <?= $rStatus == 'Alpa' ? 'checked' : '' ?>>
+                                                        <span class="status-label lbl-alpa"><i class="fas fa-times"></i> Alpa</span>
+                                                    </label>
+                                                </div>
+                                                <?php if($rUstadz): ?>
+                                                    <div class="recorded-by">
+                                                        <i class="fas fa-check-circle"></i> Dicatat oleh: <?= htmlspecialchars($rUstadz) ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                              </td>
+                                            <td data-label="Keterangan">
+                                                <input type="text" name="absensi[<?= $s['id'] ?>][keterangan]" class="note-input" value="<?= htmlspecialchars($rKet) ?>" placeholder="Tambahkan catatan (opsional)...">
+                                              </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
                                     <tr>
-                                        <td data-label="Profil Santri">
-                                            <div class="santri-name"><?= htmlspecialchars($s['nama_santri']) ?></div>
-                                            <div class="santri-kelas"><i class="fas fa-school"></i> <?= htmlspecialchars($s['nama_kelas'] ?? 'Belum ada kelas') ?></div>
-                                        </td>
-                                        <td data-label="Status Kehadiran">
-                                            <div class="radio-group">
-                                                <label class="radio-btn">
-                                                    <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Hadir" <?= $rStatus == 'Hadir' ? 'checked' : '' ?>>
-                                                    <span class="radio-label label-hadir">Hadir</span>
-                                                </label>
-                                                <label class="radio-btn">
-                                                    <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Izin" <?= $rStatus == 'Izin' ? 'checked' : '' ?>>
-                                                    <span class="radio-label label-izin">Izin</span>
-                                                </label>
-                                                <label class="radio-btn">
-                                                    <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Sakit" <?= $rStatus == 'Sakit' ? 'checked' : '' ?>>
-                                                    <span class="radio-label label-sakit">Sakit</span>
-                                                </label>
-                                                <label class="radio-btn">
-                                                    <input type="radio" name="absensi[<?= $s['id'] ?>][status]" value="Alpa" <?= $rStatus == 'Alpa' ? 'checked' : '' ?>>
-                                                    <span class="radio-label label-alpa">Alpa</span>
-                                                </label>
+                                        <td colspan="3" style="text-align: center; padding: 60px;">
+                                            <div class="empty-state" style="box-shadow: none; padding: 40px;">
+                                                <i class="fas fa-user-slash"></i>
+                                                <h3>Belum Ada Santri</h3>
+                                                <p>Anda belum memiliki santri bimbingan di kelas manapun.<br>Silakan hubungi administrator untuk penempatan kelas.</p>
                                             </div>
                                         </td>
-                                        <td data-label="Keterangan">
-                                            <input type="text" name="absensi[<?= $s['id'] ?>][keterangan]" class="input-keterangan" value="<?= htmlspecialchars($rKet) ?>" placeholder="Catatan...">
-                                        </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="3" style="text-align:center;padding:40px;color:var(--gray);">
-                                        <i class="fas fa-user-slash" style="font-size:3rem;margin-bottom:15px;color:var(--light-gray);"></i>
-                                        <p>Anda belum memiliki daftar santri bimbingan.</p>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <?php if(!empty($santri)): ?>
-                <div class="form-footer">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Data Kehadiran</button>
+                    <?php if(!empty($santri) && count($santri) > 0): ?>
+                        <div class="absensi-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Simpan Absensi
+                            </button>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <?php endif; ?>
             </form>
         </div>
-    </div> <!-- /CONTENT -->
     </div>
 
-<script>
-    // Sidebar logic
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-        sidebarOverlay.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-    });
-    
-    sidebarOverlay.addEventListener('click', function() {
-        sidebar.classList.remove('active');
-        sidebarOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    });
-    
-    // User dropdown
-    const userDropdownToggle = document.getElementById('userDropdownToggle');
-    const userDropdown = document.getElementById('userDropdown');
-    
-    userDropdownToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        userDropdown.classList.toggle('active');
-    });
-    
-    document.addEventListener('click', function(e) {
-        if (!userDropdown.contains(e.target) && !userDropdownToggle.contains(e.target)) {
-            userDropdown.classList.remove('active');
-        }
-    });
+    <!-- MODAL PRESENT LIST -->
+    <div id="presentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-check" style="color: var(--success);"></i> Daftar Santri Hadir</h3>
+                <button class="btn btn-ghost btn-sm" id="closeModal" style="background: transparent; padding: 8px 12px; font-size: 1.2rem;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul class="present-list" id="presentListContainer"></ul>
+            </div>
+        </div>
+    </div>
 
-    document.getElementById('logoutBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-            window.location.href = this.getAttribute('href');
+    <script>
+        // Sidebar toggle logic
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // User dropdown logic
+        const userDropdownToggle = document.getElementById('userDropdownToggle');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        userDropdownToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!userDropdown.contains(e.target) && !userDropdownToggle.contains(e.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+        
+        // Logout confirmation
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
+                    window.location.href = this.getAttribute('href');
+                }
+            });
         }
-    });
+        
+        // Modal Logic
+        const modal = document.getElementById('presentModal');
+        const showBtn = document.getElementById('showPresentList');
+        const closeBtn = document.getElementById('closeModal');
 
-    document.querySelectorAll('.alert').forEach(a => setTimeout(() => { a.style.opacity=0; setTimeout(()=>a.remove(),400); }, 5000));
-</script>
+        showBtn.onclick = function() {
+            const list = document.getElementById('presentListContainer');
+            list.innerHTML = '';
+            
+            let found = false;
+            document.querySelectorAll('.row-santri').forEach(row => {
+                const radioHadir = row.querySelector('input[value="Hadir"]');
+                const isHadir = radioHadir && radioHadir.checked;
+                if(isHadir) {
+                    const name = row.querySelector('.student-info h4').textContent;
+                    const kelas = row.querySelector('.student-info p').textContent;
+                    const initial = name.charAt(0).toUpperCase();
+                    
+                    const li = document.createElement('li');
+                    li.className = 'present-item';
+                    li.innerHTML = `
+                        <div class="avatar">${initial}</div>
+                        <div style="flex:1;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">${name}</div>
+                            <div style="font-size: 0.7rem; color: var(--gray);">${kelas}</div>
+                        </div>
+                        <i class="fas fa-check-circle" style="color: var(--success); font-size: 1.1rem;"></i>
+                    `;
+                    list.appendChild(li);
+                    found = true;
+                }
+            });
+
+            if(!found) {
+                list.innerHTML = '<li style="text-align: center; padding: 30px; color: var(--gray);"><i class="fas fa-user-check" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--light-gray);"></i>Belum ada santri yang ditandai hadir.</li>';
+            }
+            modal.style.display = "flex";
+        }
+
+        closeBtn.onclick = () => modal.style.display = "none";
+        window.onclick = (e) => { if(e.target == modal) modal.style.display = "none"; }
+
+        // Quick Action: Mark All Present
+        const markAllBtn = document.getElementById('markAllHadir');
+        if(markAllBtn) {
+            markAllBtn.onclick = function() {
+                if(confirm('Tandai semua santri sebagai "Hadir"?')) {
+                    document.querySelectorAll('.radio-hadir').forEach(input => {
+                        input.checked = true;
+                    });
+                }
+            };
+        }
+
+        // Auto hide alerts after 5 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 400);
+            }, 5000);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 </body>
 </html>

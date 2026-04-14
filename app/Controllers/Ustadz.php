@@ -264,21 +264,40 @@ class Ustadz extends BaseController
             ->get()
             ->getResultArray();
 
-        $riwayat = $this->absensiModel->getAbsensiByDateAndUstadz($tanggal, $id_ustadz);
+        $santriIds = array_column($santri, 'id');
+        
+        // Fetch shared attendance for these santri
+        $riwayat = $this->absensiModel->getAbsensiByDateAndSantriIds($tanggal, $santriIds);
+        
         $riwayatMapped = [];
+        $stats = [
+            'Hadir' => 0, 
+            'Izin'  => 0, 
+            'Sakit' => 0, 
+            'Alpa'  => 0, 
+            'Total' => count($santri),
+            'Terisi' => 0
+        ];
+        
         foreach($riwayat as $r) {
             $riwayatMapped[$r['id_santri']] = $r;
+            if (isset($stats[$r['status']])) {
+                $stats[$r['status']]++;
+                $stats['Terisi']++;
+            }
         }
 
         $data = [
-            'judul' => 'Kehadiran Santri',
-            'santri' => $santri,
+            'judul'   => 'Kehadiran Santri',
+            'santri'  => $santri,
             'tanggal' => $tanggal,
-            'riwayat' => $riwayatMapped
+            'riwayat' => $riwayatMapped,
+            'stats'   => $stats
         ];
 
         return view('ustadz/absensi', $data);
     }
+
 
     public function storeAbsensi()
     {
@@ -297,16 +316,16 @@ class Ustadz extends BaseController
             $status = $data['status'] ?? 'Hadir';
             $keterangan = $data['keterangan'] ?? null;
 
-            // Cek apakah sudah diabsen pada tanggal yang sama
+            // Cek apakah sudah diabsen pada tanggal yang sama (oleh siapa pun)
             $existing = $this->absensiModel->where('tanggal', $tanggal)
                                            ->where('id_santri', $id_santri)
-                                           ->where('id_ustadz', $id_ustadz)
                                            ->first();
 
             if($existing) {
                 $this->absensiModel->update($existing['id'], [
                     'status' => $status,
-                    'keterangan' => $keterangan
+                    'keterangan' => $keterangan,
+                    'id_ustadz' => $id_ustadz // Update who last modified it
                 ]);
             } else {
                 $this->absensiModel->insert([
@@ -318,6 +337,7 @@ class Ustadz extends BaseController
                 ]);
             }
         }
+
 
         $db->transComplete();
 
@@ -331,10 +351,32 @@ class Ustadz extends BaseController
     public function hafalan()
     {
         $id_ustadz = session()->get('id');
-        $riwayatHafalan = $this->hafalanModel->getHafalanByUstadz($id_ustadz);
+        $db = \Config\Database::connect();
+        
+        // Ambil filter dari GET
+        $santri_filt = $this->request->getGet('santri');
+        $id_kelas_filt = $this->request->getGet('id_kelas');
+        $tanggal_filt = $this->request->getGet('tanggal');
+
+        $query = $db->table('hafalan')
+            ->select('hafalan.*, santri.nama_santri, santri.nis, kelas.nama_kelas')
+            ->join('santri', 'santri.id = hafalan.id_santri', 'left')
+            ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
+            ->where('hafalan.id_ustadz', $id_ustadz);
+
+        if ($santri_filt) {
+            $query->like('santri.nama_santri', $santri_filt);
+        }
+        if ($id_kelas_filt) {
+            $query->where('santri.id_kelas', $id_kelas_filt);
+        }
+        if ($tanggal_filt) {
+            $query->where('hafalan.tanggal', $tanggal_filt);
+        }
+
+        $riwayatHafalan = $query->orderBy('hafalan.tanggal', 'DESC')->get()->getResultArray();
         
         // Ambil santri yang dibimbing untuk opsi tambah
-        $db = \Config\Database::connect();
         $santri = $db->table('santri')
             ->select('santri.id, santri.nama_santri')
             ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
@@ -347,10 +389,26 @@ class Ustadz extends BaseController
             ->get()
             ->getResultArray();
 
+        // Ambil daftar kelas untuk filter
+        $kelas = $db->table('kelas')
+            ->select('kelas.*')
+            ->groupStart()
+                ->where('id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
+            ->groupEnd()
+            ->get()
+            ->getResultArray();
+
         $data = [
             'judul' => 'Catat Hafalan Santri',
             'riwayat' => $riwayatHafalan,
-            'santriList' => $santri
+            'santriList' => $santri,
+            'kelasList' => $kelas,
+            'filter' => [
+                'santri' => $santri_filt,
+                'id_kelas' => $id_kelas_filt,
+                'tanggal' => $tanggal_filt
+            ]
         ];
 
         return view('ustadz/hafalan', $data);
@@ -360,34 +418,50 @@ class Ustadz extends BaseController
     {
         $db = \Config\Database::connect();
         
-        if (!$db->fieldExists('nilai', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
-        }
-        if (!$db->fieldExists('kategori', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
-        }
-        
         $rules = [
             'id_santri' => 'required|integer',
             'surah' => 'required',
             'ayat_awal' => 'required|integer',
             'ayat_akhir' => 'required|integer',
-            'status' => 'required|in_list[Lancar,Sedang,Mengulang]'
+            'nilai' => 'required|in_list[5,6,7,8,9]'
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $id_santri = $this->request->getPost('id_santri');
+        $surah = $this->request->getPost('surah');
+        $nilai = (int)$this->request->getPost('nilai');
+
+        // 1. Cek progres terakhir santri
+        $lastRecord = $this->hafalanModel->where('id_santri', $id_santri)
+            ->orderBy('tanggal', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if ($lastRecord && (float)$lastRecord['nilai'] < 8) {
+            if (trim(strtolower((string)$lastRecord['surah'])) != trim(strtolower((string)$surah))) {
+                return redirect()->back()->withInput()->with('error', "Santri belum tuntas Muroja'ah pada Surah " . $lastRecord['surah'] . ". Selesaikan dulu hingga nilai minimal 8 sebelum pindah ke surat lain.");
+            }
+        }
+
+        // 2. Tentukan Status & Kategori
+        $status = 'Lancar';
+        if ($nilai == 7) $status = 'Sedang';
+        if ($nilai <= 6) $status = 'Mengulang';
+
+        $kategori = ($nilai < 8) ? 'Murojaah' : 'Hafalan Baru';
+
         $this->hafalanModel->save([
-            'id_santri' => $this->request->getPost('id_santri'),
+            'id_santri' => $id_santri,
             'tanggal' => $this->request->getPost('tanggal') ?: date('Y-m-d'),
-            'surah' => $this->request->getPost('surah'),
+            'surah' => $surah,
             'ayat_awal' => $this->request->getPost('ayat_awal'),
             'ayat_akhir' => $this->request->getPost('ayat_akhir'),
-            'status' => $this->request->getPost('status'),
-            'nilai' => $this->request->getPost('nilai') ?: 0,
-            'kategori' => 'Hafalan Baru',
+            'status' => $status,
+            'nilai' => $nilai,
+            'kategori' => $kategori,
             'id_ustadz' => session()->get('id'),
             'keterangan' => $this->request->getPost('keterangan')
         ]);
@@ -469,22 +543,29 @@ class Ustadz extends BaseController
         $id_ustadz = session()->get('id');
         $db = \Config\Database::connect();
         
-        if (!$db->fieldExists('nilai', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
-        }
-        if (!$db->fieldExists('kategori', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
-        }
-        
-        $riwayatMurojaah = $db->table('hafalan')
+        // Ambil filter dari GET
+        $santri_filt = $this->request->getGet('santri');
+        $id_kelas_filt = $this->request->getGet('id_kelas');
+        $tanggal_filt = $this->request->getGet('tanggal');
+
+        $query = $db->table('hafalan')
             ->select('hafalan.*, santri.nama_santri, santri.nis, kelas.nama_kelas')
             ->join('santri', 'santri.id = hafalan.id_santri', 'left')
             ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
             ->where('hafalan.id_ustadz', $id_ustadz)
-            ->where('hafalan.kategori', 'Murojaah')
-            ->orderBy('hafalan.tanggal', 'DESC')
-            ->get()
-            ->getResultArray();
+            ->where('hafalan.kategori', 'Murojaah');
+
+        if ($santri_filt) {
+            $query->like('santri.nama_santri', $santri_filt);
+        }
+        if ($id_kelas_filt) {
+            $query->where('santri.id_kelas', $id_kelas_filt);
+        }
+        if ($tanggal_filt) {
+            $query->where('hafalan.tanggal', $tanggal_filt);
+        }
+
+        $riwayatMurojaah = $query->orderBy('hafalan.tanggal', 'DESC')->get()->getResultArray();
             
         // Ambil santri yang dibimbing untuk opsi tambah
         $santri = $db->table('santri')
@@ -499,10 +580,26 @@ class Ustadz extends BaseController
             ->get()
             ->getResultArray();
 
+        // Ambil daftar kelas untuk filter
+        $kelas = $db->table('kelas')
+            ->select('kelas.*')
+            ->groupStart()
+                ->where('id_ustadz', $id_ustadz)
+                ->orWhere("kelas.id IN (SELECT id_kelas FROM kelas_ustadz WHERE id_ustadz = $id_ustadz)")
+            ->groupEnd()
+            ->get()
+            ->getResultArray();
+
         $data = [
             'judul' => 'Muroja\'ah Santri',
             'riwayat' => $riwayatMurojaah,
-            'santriList' => $santri
+            'santriList' => $santri,
+            'kelasList' => $kelas,
+            'filter' => [
+                'santri' => $santri_filt,
+                'id_kelas' => $id_kelas_filt,
+                'tanggal' => $tanggal_filt
+            ]
         ];
 
         return view('ustadz/murojaah', $data);
@@ -512,34 +609,50 @@ class Ustadz extends BaseController
     {
         $db = \Config\Database::connect();
         
-        if (!$db->fieldExists('nilai', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN nilai FLOAT DEFAULT 0 AFTER status;");
-        }
-        if (!$db->fieldExists('kategori', 'hafalan')) {
-            $db->query("ALTER TABLE hafalan ADD COLUMN kategori VARCHAR(50) DEFAULT 'Hafalan Baru' AFTER nilai;");
-        }
-        
         $rules = [
             'id_santri' => 'required|integer',
             'surah' => 'required',
             'ayat_awal' => 'required|integer',
             'ayat_akhir' => 'required|integer',
-            'status' => 'required|in_list[Lancar,Sedang,Mengulang]'
+            'nilai' => 'required|in_list[5,6,7,8,9]'
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $id_santri = $this->request->getPost('id_santri');
+        $surah = $this->request->getPost('surah');
+        $nilai = (int)$this->request->getPost('nilai');
+
+        // Cek progres terakhir santri (sama dengan logic hafalan baru)
+        $lastRecord = $this->hafalanModel->where('id_santri', $id_santri)
+            ->orderBy('tanggal', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if ($lastRecord && (float)$lastRecord['nilai'] < 8) {
+            if (trim(strtolower((string)$lastRecord['surah'])) != trim(strtolower((string)$surah))) {
+                return redirect()->back()->withInput()->with('error', "Santri belum tuntas Muroja'ah pada Surah " . $lastRecord['surah'] . ". Selesaikan dulu hingga nilai minimal 8 sebelum pindah ke surat lain.");
+            }
+        }
+
+        // Tentukan Status & Kategori
+        $status = 'Lancar';
+        if ($nilai == 7) $status = 'Sedang';
+        if ($nilai <= 6) $status = 'Mengulang';
+
+        $kategori = 'Murojaah'; // Selalu simpan sebagai kategori Murojaah agar tetap muncul di histori murojaah
+
         $this->hafalanModel->save([
-            'id_santri' => $this->request->getPost('id_santri'),
+            'id_santri' => $id_santri,
             'tanggal' => $this->request->getPost('tanggal') ?: date('Y-m-d'),
-            'surah' => $this->request->getPost('surah'),
+            'surah' => $surah,
             'ayat_awal' => $this->request->getPost('ayat_awal'),
             'ayat_akhir' => $this->request->getPost('ayat_akhir'),
-            'status' => $this->request->getPost('status'),
-            'nilai' => $this->request->getPost('nilai') ?: 0,
-            'kategori' => 'Murojaah',
+            'status' => $status,
+            'nilai' => $nilai,
+            'kategori' => $kategori,
             'id_ustadz' => session()->get('id'),
             'keterangan' => $this->request->getPost('keterangan')
         ]);
@@ -566,37 +679,39 @@ class Ustadz extends BaseController
         foreach($kelas as $k) {
             $id_kelas = $k['id'];
             
-            // Total Santri di kelas
-            $total_santri = $db->table('santri')
-                ->where('id_kelas', $id_kelas)
-                ->countAllResults();
-                
-            // Hitung rata-rata progres
-            $stats = $db->table('hafalan')
-                ->selectAvg('nilai', 'avg_nilai')
-                ->selectCount('hafalan.id', 'total_setoran')
-                ->join('santri', 'santri.id = hafalan.id_santri')
+            // Ambil semua santri di kelas ini beserta hafalan terakhir mereka
+            $students = $db->table('santri')
+                ->select('santri.id, santri.nama_santri, santri.nis, h.surah, h.ayat_awal, h.ayat_akhir, h.nilai, h.tanggal')
+                ->join('(SELECT h1.* FROM hafalan h1 INNER JOIN (SELECT id_santri, MAX(id) as max_id FROM hafalan GROUP BY id_santri) h2 ON h1.id = h2.max_id) h', 'santri.id = h.id_santri', 'left')
                 ->where('santri.id_kelas', $id_kelas)
+                ->orderBy('santri.nama_santri', 'ASC')
                 ->get()
-                ->getRowArray();
-                
-            // Top student
-            $top_student = $db->table('hafalan')
-                ->select('santri.nama_santri, count(hafalan.id) as total')
-                ->join('santri', 'santri.id = hafalan.id_santri')
-                ->where('santri.id_kelas', $id_kelas)
-                ->groupBy('hafalan.id_santri')
-                ->orderBy('total', 'DESC')
-                ->limit(1)
-                ->get()
-                ->getRowArray();
-                
+                ->getResultArray();
+
+            $total_santri = count($students);
+            $total_tuntas = 0;
+            $sum_nilai = 0;
+            $count_nilai = 0;
+
+            foreach($students as $s) {
+                if ($s['nilai'] !== null) {
+                    $sum_nilai += (float)$s['nilai'];
+                    $count_nilai++;
+                    if ((float)$s['nilai'] >= 8) {
+                        $total_tuntas++;
+                    }
+                }
+            }
+
+            $avg_nilai = ($count_nilai > 0) ? $sum_nilai / $count_nilai : 0;
+            $percent_tuntas = ($total_santri > 0) ? ($total_tuntas / $total_santri) * 100 : 0;
+
             $progres[] = [
                 'kelas' => $k,
                 'total_santri' => $total_santri,
-                'avg_nilai' => number_format($stats['avg_nilai'] ?? 0, 1),
-                'total_setoran' => $stats['total_setoran'] ?? 0,
-                'top_student' => $top_student['nama_santri'] ?? '-'
+                'avg_nilai' => number_format($avg_nilai, 1),
+                'percent_tuntas' => number_format($percent_tuntas, 1),
+                'students' => $students
             ];
         }
         

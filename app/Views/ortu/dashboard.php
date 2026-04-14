@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Wali Murid - PTQ Al-Hikmah</title>
+    <title>Dashboard Wali Murid - PTQ Pencongan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* VARIABLES & RESET - Consistent with Ustadz Pages */
@@ -27,7 +27,7 @@
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .logo img { height: 36px; filter: brightness(0) invert(1); }
+        .logo img { height: 36px; border-radius: 6px; }
         .logo-text { font-size: 1.4rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
         .logo-text span { color: var(--accent); }
         
@@ -364,8 +364,8 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <a href="<?= base_url('ortu/dashboard') ?>" class="logo" style="text-decoration:none;">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01eiI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDE3bDEwIDUgMTAtNSI+PC9wYXRoPjxwYXRoIGQ9Ik0yIDEybDEwIDUgMTAtNSI+PC9wYXRoPjwvc3ZnPg==" alt="Logo PTQ">
-                        <div class="logo-text">PTQ <span>Al-Hikmah</span></div>
+                        <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ">
+                        <div class="logo-text">PTQ <span>Pencongan</span></div>
                     </a>
                 </div>
                 
@@ -421,9 +421,11 @@
             
             <div class="sidebar-menu">
                 <div class="menu-item active"><a href="<?= base_url('ortu/dashboard') ?>"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ortu/progres') ?>"><i class="fas fa-chart-line"></i><span>Progres Santri</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ortu/hafalan') ?>"><i class="fas fa-quran"></i><span>Hafalan Anak</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ortu/kehadiran') ?>"><i class="fas fa-calendar-check"></i><span>Kehadiran</span></a></div>
                 <div class="menu-item"><a href="<?= base_url('ortu/pembayaran') ?>"><i class="fas fa-wallet"></i><span>Pembayaran</span></a></div>
+                <div class="menu-item"><a href="<?= base_url('ortu/jadwal') ?>"><i class="fas fa-calendar-alt"></i><span>Jadwal</span></a></div>
             </div>
         </div>
 
@@ -531,8 +533,19 @@
                                             <span><?= htmlspecialchars($s['nama_kelas'] ?? 'Belum Ditentukan') ?></span>
                                         </div>
                                         <div class="child-info-item">
-                                            <span>Wali Kelas</span>
-                                            <span><?= htmlspecialchars($s['nama_ustadz'] ?? 'Belum Ditentukan') ?></span>
+                                            <span>Ustadz Pengajar</span>
+                                            <span>
+                                                <?php if(!empty($s['ustadz_list'])): ?>
+                                                    <?php foreach($s['ustadz_list'] as $u): ?>
+                                                        <span style="display:inline-block; background:rgba(26,95,180,0.1); color:var(--primary); padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:600; margin:2px 0;">
+                                                            <i class="fas fa-chalkboard-teacher" style="font-size:0.7rem;"></i>
+                                                            <?= htmlspecialchars($u['nama_lengkap']) ?>
+                                                        </span>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    Belum Ditentukan
+                                                <?php endif; ?>
+                                            </span>
                                         </div>
                                         <div class="child-info-item">
                                             <span>Status</span>
@@ -567,7 +580,7 @@
                     </div>
                 </div>
                 <div style="padding: 20px 24px;">
-                    <p style="margin-bottom: 12px;">Dashboard Wali Murid PTQ Al-Hikmah memungkinkan Anda untuk:</p>
+                    <p style="margin-bottom: 12px;">Dashboard Wali Murid PTQ Pencongan memungkinkan Anda untuk:</p>
                     <ul style="margin-left: 20px; margin-bottom: 15px;">
                         <li>• Memantau hafalan Al-Qur'an putra-putri Anda</li>
                         <li>• Melihat rekam kehadiran santri</li>

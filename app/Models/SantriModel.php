@@ -33,10 +33,10 @@ class SantriModel extends Model
     // Mendapatkan data santri beserta informasi ortu dan kelas seandainya ada
     public function getSantriWithDetails()
     {
-        // Untuk sekarang karena belum ada tabel kelas dll, kita join dengan user saja untuk Ortu & Ustadz
-        return $this->select('santri.*, ortu.nama_lengkap as nama_ortu, ustadz.nama_lengkap as nama_ustadz')
+        return $this->select('santri.*, ortu.nama_lengkap as nama_ortu, ustadz.nama_lengkap as nama_ustadz, kelas.nama_kelas')
                     ->join('users as ortu', 'ortu.id = santri.id_ortu', 'left')
                     ->join('users as ustadz', 'ustadz.id = santri.id_ustadz', 'left')
+                    ->join('kelas', 'kelas.id = santri.id_kelas', 'left')
                     ->findAll();
     }
 

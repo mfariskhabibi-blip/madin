@@ -104,40 +104,20 @@
         }
 
         .logo-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: 18px;
+            width: 90px;
+            height: 90px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 18px;
-            box-shadow: 0 8px 25px rgba(26, 95, 180, 0.35);
             position: relative;
             overflow: hidden;
         }
 
-        .logo-icon::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-
-        .logo-icon i {
-            font-size: 2rem;
-            color: white;
-            position: relative;
-            z-index: 1;
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .login-title {
@@ -370,13 +350,8 @@
             }
 
             .logo-icon {
-                width: 60px;
-                height: 60px;
-                border-radius: 14px;
-            }
-
-            .logo-icon i {
-                font-size: 1.6rem;
+                width: 70px;
+                height: 70px;
             }
         }
 
@@ -400,7 +375,7 @@
             <!-- Logo -->
             <div class="login-logo">
                 <div class="logo-icon">
-                    <i class="fas fa-quran"></i>
+                    <img src="<?= base_url('assets/img/logo-ptq.jpg') ?>" alt="Logo PTQ Pencongan">
                 </div>
                 <h1 class="login-title">PTQ <span>Pencongan</span></h1>
                 <p class="login-subtitle">Masuk ke Learning Management System</p>
@@ -467,7 +442,7 @@
             </form>
 
             <div class="login-footer">
-                <p>&copy; <?= date('Y') ?> <span class="brand">PTQ Al-Hikmah</span>. All rights reserved.</p>
+                <p>&copy; <?= date('Y') ?> <span class="brand">PTQ Pencongan</span>. All rights reserved.</p>
             </div>
         </div>
     </div>

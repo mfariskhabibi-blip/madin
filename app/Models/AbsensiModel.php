@@ -44,4 +44,19 @@ class AbsensiModel extends Model
                     ->orderBy('absensi.tanggal', 'DESC')
                     ->findAll();
     }
+
+    /**
+     * Mendapatkan absensi bersama untuk sekelompok santri pada tanggal tertentu
+     * Digunakan agar Ustadz yang mengampu kelas yang sama bisa melihat absensi satu sama lain
+     */
+    public function getAbsensiByDateAndSantriIds($tanggal, $santriIds)
+    {
+        if (empty($santriIds)) return [];
+        return $this->select('absensi.*, users.nama_lengkap as nama_ustadz')
+                    ->join('users', 'users.id = absensi.id_ustadz', 'left')
+                    ->where('absensi.tanggal', $tanggal)
+                    ->whereIn('absensi.id_santri', $santriIds)
+                    ->findAll();
+    }
 }
+

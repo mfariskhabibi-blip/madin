@@ -307,10 +307,7 @@
                                 <label class="form-label"><i class="fas fa-user"></i> Nama Lengkap & Gelar <span class="required">*</span></label>
                                 <input type="text" name="nama_lengkap" class="form-control" value="<?= old('nama_lengkap', $ustadz['nama_lengkap']) ?>" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-id-badge"></i> NIP / ID Pegawai</label>
-                                <input type="text" name="nip" class="form-control" value="<?= old('nip', $ustadz['nip']) ?>">
-                            </div>
+
                             <div class="form-group">
                                 <label class="form-label"><i class="fas fa-venus-mars"></i> Jenis Kelamin <span class="required">*</span></label>
                                 <select name="jenis_kelamin" class="form-control" required>
@@ -330,24 +327,17 @@
                     <div class="form-card-header">
                         <div class="icon-box" style="background: rgba(229,165,10,0.1); color: var(--accent);"><i class="fas fa-graduation-cap"></i></div>
                         <div>
-                            <h3>Keahlian & Kontak</h3>
-                            <p>Informasi pendukung profil pengajar</p>
+                            <h3>Kontak Pengajar</h3>
                         </div>
                     </div>
                     <div class="form-card-body">
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-certificate"></i> Bidang Keahlian</label>
-                                <input type="text" name="bidang_keahlian" class="form-control" value="<?= old('bidang_keahlian', $ustadz['bidang_keahlian']) ?>">
-                            </div>
+
                             <div class="form-group">
                                 <label class="form-label"><i class="fas fa-phone"></i> Nomor Telepon <span class="required">*</span></label>
                                 <input type="text" name="no_telepon" class="form-control" value="<?= old('no_telepon', $ustadz['no_telepon']) ?>" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-university"></i> Pendidikan Terakhir</label>
-                                <input type="text" name="pendidikan" class="form-control" value="<?= old('pendidikan', $ustadz['pendidikan']) ?>">
-                            </div>
+
                             <div class="form-group">
                                 <label class="form-label"><i class="fas fa-toggle-on"></i> Status Kepegawaian <span class="required">*</span></label>
                                 <select name="status" class="form-control" required>

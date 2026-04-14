@@ -253,7 +253,7 @@
                             <tr>
                                 <th>Username</th>
                                 <th>Profil Pengajar</th>
-                                <th>Bidang Keahlian</th>
+
                                 <th>No. Telepon</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
@@ -278,17 +278,10 @@
                                                 </div>
                                                 <div class="u-info">
                                                     <div class="u-name"><?= htmlspecialchars($u['nama_lengkap'] ?? 'Profil Belum Lengkap') ?></div>
-                                                    <div class="u-nip"><?= $u['nip'] ? 'NIP: ' . htmlspecialchars($u['nip']) : '<span style="color:var(--warning); font-style:italic;">Data belum diisi</span>' ?></div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td data-label="Bidang Keahlian">
-                                            <?php if($u['profile_id']): ?>
-                                                <span class="badge badge-skill"><i class="fas fa-certificate"></i> <?= htmlspecialchars($u['bidang_keahlian'] ?? '-') ?></span>
-                                            <?php else: ?>
-                                                <span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Menunggu Profil</span>
-                                            <?php endif; ?>
-                                        </td>
+
                                         <td data-label="No. Telepon">
                                             <span style="font-size:.85rem;"><?= htmlspecialchars($u['no_telepon'] ?? '-') ?></span>
                                         </td>

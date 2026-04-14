@@ -320,10 +320,7 @@
                                 <label class="form-label"><i class="fas fa-user"></i> Nama Lengkap & Gelar <span class="required">*</span></label>
                                 <input type="text" name="nama_lengkap" class="form-control" placeholder="Contoh: Ustadz Ahmad, S.Ag" value="<?= old('nama_lengkap') ?>" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-id-badge"></i> NIP / ID Pegawai</label>
-                                <input type="text" name="nip" class="form-control" placeholder="Biarkan kosong jika tidak ada" value="<?= old('nip') ?>">
-                            </div>
+
                             <div class="form-group">
                                 <label class="form-label"><i class="fas fa-venus-mars"></i> Jenis Kelamin <span class="required">*</span></label>
                                 <select name="jenis_kelamin" class="form-control" required>
@@ -343,24 +340,17 @@
                     <div class="form-card-header">
                         <div class="icon-box" style="background: rgba(229,165,10,0.1); color: var(--accent);"><i class="fas fa-graduation-cap"></i></div>
                         <div>
-                            <h3>Keahlian & Kontak</h3>
-                            <p>Informasi pendukung profil pengajar</p>
+                            <h3>Kontak Pengajar</h3>
                         </div>
                     </div>
                     <div class="form-card-body">
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label"><i class="fas fa-certificate"></i> Bidang Keahlian</label>
-                                <input type="text" name="bidang_keahlian" class="form-control" placeholder="Tahsin, Tahfidz, Fiqih, dll" value="<?= old('bidang_keahlian') ?>">
-                            </div>
+
                             <div class="form-group">
                                 <label class="form-label"><i class="fas fa-phone"></i> Nomor Telepon <span class="required">*</span></label>
                                 <input type="text" name="no_telepon" class="form-control" placeholder="08..." value="<?= old('no_telepon') ?>" required>
                             </div>
-                            <div class="form-group full-width">
-                                <label class="form-label"><i class="fas fa-university"></i> Pendidikan Terakhir</label>
-                                <input type="text" name="pendidikan" class="form-control" placeholder="Contoh: S1 Pendidikan Agama Islam" value="<?= old('pendidikan') ?>">
-                            </div>
+
                             <div class="form-group full-width">
                                 <label class="form-label"><i class="fas fa-map-marker-alt"></i> Alamat Lengkap</label>
                                 <textarea name="alamat" class="form-control" placeholder="Alamat domisili pengajar"><?= old('alamat') ?></textarea>

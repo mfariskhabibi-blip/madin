@@ -46,8 +46,9 @@ class HafalanModel extends Model
     public function getHafalanBySantriIds($ids)
     {
         if (empty($ids)) return [];
-        return $this->select('hafalan.*, santri.nama_santri')
+        return $this->select('hafalan.*, santri.nama_santri, users.nama_lengkap as nama_ustadz')
                     ->join('santri', 'santri.id = hafalan.id_santri', 'left')
+                    ->join('users', 'users.id = hafalan.id_ustadz', 'left')
                     ->whereIn('hafalan.id_santri', $ids)
                     ->orderBy('hafalan.tanggal', 'DESC')
                     ->findAll();

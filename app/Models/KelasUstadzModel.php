@@ -30,4 +30,15 @@ class KelasUstadzModel extends Model
                     ->where('kelas_ustadz.id_kelas', $id_kelas)
                     ->findAll();
     }
+
+    /**
+     * Get all classes for a specific ustadz
+     */
+    public function getKelasByUstadz($id_ustadz)
+    {
+        return $this->select('kelas.*')
+                    ->join('kelas', 'kelas.id = kelas_ustadz.id_kelas')
+                    ->where('kelas_ustadz.id_ustadz', $id_ustadz)
+                    ->findAll();
+    }
 }

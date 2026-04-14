@@ -35,16 +35,35 @@ class Admin extends BaseController
     // =========================================================
     public function dashboard()
     {
+        $totalSantri = $this->santriModel->where('status', 'aktif')->countAllResults();
+        $totalPengajar = $this->userModel->where('role', 'ustadz')->where('status', 'aktif')->countAllResults();
+        $totalKelas = $this->kelasModel->countAllResults();
+        
+        $pembayaranBelumLunas = $this->pembayaranModel->where('status', 'Pending')->countAllResults();
+        
+        $santriTerbaru = $this->santriModel->orderBy('created_at', 'DESC')->findAll(5);
+        
+        $pembayaranTerakhir = $this->pembayaranModel->select('pembayaran.*, pembayaran.tanggal_bayar as tanggal, santri.nama_santri')
+                                ->join('santri', 'santri.id = pembayaran.id_santri', 'left')
+                                ->orderBy('pembayaran.created_at', 'DESC')
+                                ->findAll(5);
+
+        // Calculate persentase_kehadiran
+        $absensiModel = new \App\Models\AbsensiModel();
+        $totalAbsensi = $absensiModel->countAllResults();
+        $hadir = $absensiModel->where('status', 'Hadir')->countAllResults();
+        $persentaseKehadiran = $totalAbsensi > 0 ? round(($hadir / $totalAbsensi) * 100) : 0;
+
         $data = [
             'judul'                  => 'Dashboard Admin',
             'nama_admin'             => session()->get('nama_lengkap') ?? 'Admin PTQ',
-            'total_santri'           => 0,
-            'total_pengajar'         => 0,
-            'total_kelas'            => 0,
-            'pembayaran_belum_lunas' => 0,
-            'santri_terbaru'         => [],
-            'persentase_kehadiran'   => 0,
-            'pembayaran_terakhir'    => []
+            'total_santri'           => $totalSantri,
+            'total_pengajar'         => $totalPengajar,
+            'total_kelas'            => $totalKelas,
+            'pembayaran_belum_lunas' => $pembayaranBelumLunas,
+            'santri_terbaru'         => $santriTerbaru,
+            'persentase_kehadiran'   => $persentaseKehadiran,
+            'pembayaran_terakhir'    => $pembayaranTerakhir
         ];
         return view('admin/dashboard', $data);
     }
@@ -392,7 +411,7 @@ class Admin extends BaseController
 
         if ($user['role'] === 'ustadz') {
             $profile = $this->ustadzModel->where('id_user', $id)->first();
-            $extraData['kelas'] = $this->kelasModel->where('id_ustadz', $id)->findAll();
+            $extraData['kelas'] = $this->kelasUstadzModel->getKelasByUstadz($id);
         } elseif ($user['role'] === 'ortu') {
             $profile = $this->orangTuaModel->where('id_user', $id)->first();
             $extraData['santri'] = $this->santriModel->where('id_ortu', $id)->findAll();
@@ -589,7 +608,6 @@ class Admin extends BaseController
         $rules = [
             'id_user'       => 'required|is_unique[ustadz.id_user]',
             'nama_lengkap'  => 'required|min_length[3]',
-            'nip'           => 'permit_empty|is_unique[ustadz.nip]',
             'jenis_kelamin' => 'required|in_list[L,P]',
             'no_telepon'    => 'required',
         ];
@@ -600,14 +618,10 @@ class Admin extends BaseController
 
         $this->ustadzModel->save([
             'id_user'         => $this->request->getPost('id_user'),
-            'nip'             => $this->request->getPost('nip') ?: null,
-            'nama_lengkap'    => $this->request->getPost('nama_lengkap'),
             'jenis_kelamin'   => $this->request->getPost('jenis_kelamin'),
             'tanggal_lahir'   => $this->request->getPost('tanggal_lahir') ?: null,
             'alamat'          => $this->request->getPost('alamat'),
             'no_telepon'      => $this->request->getPost('no_telepon'),
-            'pendidikan'      => $this->request->getPost('pendidikan'),
-            'bidang_keahlian' => $this->request->getPost('bidang_keahlian'),
             'status'          => 'aktif'
         ]);
 
@@ -623,7 +637,6 @@ class Admin extends BaseController
 
         $rules = [
             'nama_lengkap'  => 'required|min_length[3]',
-            'nip'           => "permit_empty|is_unique[ustadz.nip,id,{$id}]",
             'jenis_kelamin' => 'required|in_list[L,P]',
             'no_telepon'    => 'required',
             'status'        => 'required|in_list[aktif,nonaktif]',
@@ -634,14 +647,11 @@ class Admin extends BaseController
         }
 
         $this->ustadzModel->update($id, [
-            'nip'             => $this->request->getPost('nip') ?: null,
             'nama_lengkap'    => $this->request->getPost('nama_lengkap'),
             'jenis_kelamin'   => $this->request->getPost('jenis_kelamin'),
             'tanggal_lahir'   => $this->request->getPost('tanggal_lahir') ?: null,
             'alamat'          => $this->request->getPost('alamat'),
             'no_telepon'      => $this->request->getPost('no_telepon'),
-            'pendidikan'      => $this->request->getPost('pendidikan'),
-            'bidang_keahlian' => $this->request->getPost('bidang_keahlian'),
             'status'          => $this->request->getPost('status')
         ]);
 
@@ -664,7 +674,7 @@ class Admin extends BaseController
         }
 
         // Get managed classes
-        $kelas = $this->kelasModel->where('id_ustadz', $ustadz['id_user'])->findAll();
+        $kelas = $this->kelasUstadzModel->getKelasByUstadz($ustadz['id_user']);
 
         // Get schedule
         $jadwal = $this->jadwalModel->getJadwalByUstadz($ustadz['id_user']);
